@@ -11,7 +11,7 @@ def main():
 
     #master.kNN(X,y)
 
-
+    #Prova salvataggio
 
 
 if __name__ == "__main__":
