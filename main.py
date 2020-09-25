@@ -15,7 +15,13 @@ def main():
 
     #master.kNN(X_num,y)
 
-    master.logistic_regression(X, y)
+    #metto prima lda che fa un po' schifo
+    #master.LDA(X,y)
+
+    #master.logistic_regression(X, y)
+
+    master.SVD(X,y)
+
 
 if __name__ == "__main__":
     main()
