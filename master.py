@@ -93,7 +93,7 @@ def preproc(df):
        'reason_home', 'reason_other', 'reason_reputation', 'guardian_father',
        'guardian_mother', 'guardian_other', 'G1', 'G2']]
     x_novotes=db[['school', 'sex', 'age', 'address', 'famsize', 'Pstatus', 'Medu', 'Fedu']]
-    y=db[['binary']]
+    y=db['binary']
 
     return x,y
 
