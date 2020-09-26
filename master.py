@@ -200,8 +200,8 @@ def kNN(x, y):
     plt.title('KNN train and test F1 error for different values of K')
     plt.legend()
     plt.show()
-    print("F1 test error is:")
-    print(f1error_test)
+    #print("F1 test error is:")
+    #print(f1error_test)
 
     # la scelta migliore con train-test è k=5 -> test_accuracy=0.86769 (val)
 
@@ -328,6 +328,8 @@ def SVD(x,y):
     x_train, x_test, y_train, y_test = train_test_split(xnp, y, test_size=0.5, random_state=123)
     y_train = np.ravel(y_train)
     y_test = np.ravel(y_test)
+    #normalizzazione??
+
 
     #script per classi non bilanciate -> da provare e capire se si può applicare anche agli altri
     #https://scikit-learn.org/stable/auto_examples/svm/plot_separating_hyperplane_unbalanced.html#sphx-glr-auto-examples-svm-plot-separating-hyperplane-unbalanced-py
@@ -442,7 +444,7 @@ def SVD(x,y):
     print("score_test",score_test)
     print("f1_test",f1_test)
 
-    clf=sklearn.svm.SVC(C=0.01,kernel='linear',class_weight={0:2}).fit(x_train,y_train)
+    clf=sklearn.svm.SVC(C=0.01,kernel='linear',class_weight={0:1.25}).fit(x_train,y_train)
     y_pred = clf.predict(x_test)
     cv_accuracy=np.mean(cross_val_score(clf, x, y, cv=10))
     matrix = metrics.confusion_matrix(y_test, y_pred, normalize="true")

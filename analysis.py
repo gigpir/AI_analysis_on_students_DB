@@ -14,9 +14,12 @@ def preliminaryStat(X, y):
     y.replace(map, inplace=True)
     #y.columns = ['Final Result']
     yasd=y
-    ax = sns.countplot(yasd, x='Results')
-    plt.show()
+    #ax = sns.countplot(yasd, x='Results')
+    #plt.show()
     P, F = y.value_counts()
+    y.value_counts().plot(kind='barh') #da fare un po' più carino
+
+    plt.show()
     print('Number of Pass: ', P)
     print('Number of Fail : ', F)
 
