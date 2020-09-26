@@ -9,6 +9,7 @@ def main():
 
     #analysis.preliminaryStat(X, df['binary'])
 
+    analysis.heatMap(X,y)
     #master.kNN(X,y)
 
     #X_num= master.select_numerical(X)
@@ -20,7 +21,7 @@ def main():
 
     #master.logistic_regression(X, y)
 
-    master.SVD(X,y)
+    #master.SVD(X,y)
 
 
 if __name__ == "__main__":
