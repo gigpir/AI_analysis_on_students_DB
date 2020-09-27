@@ -1,0 +1,18 @@
+Index: main.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>import master\nimport analysis\n\ndef main():\n    df = master.init()\n    #print(df)\n\n    X, y = master.preproc(df)\n\n    #analysis.preliminaryStat(X, df['binary'])\n\n    analysis.heatMap(X,y)\n    #master.kNN(X,y)\n\n    #X_num= master.select_numerical(X)\n\n    #master.kNN(X_num,y)\n\n    #metto prima lda che fa un po' schifo\n    #master.LDA(X,y)\n\n    #master.logistic_regression(X, y)\n\n    #master.SVD(X,y)\n\n\nif __name__ == \"__main__\":\n    main()
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- main.py	(revision 4b965be4cd784db7bcfb07eaa1169bcd9ea1c5d9)
++++ main.py	(date 1601136985892)
+@@ -21,7 +21,7 @@
+ 
+     #master.logistic_regression(X, y)
+ 
+-    #master.SVD(X,y)
++    master.SVD(X,y)
+ 
+ 
+ if __name__ == "__main__":

@@ -1,11 +1,16 @@
 import master
 import analysis
+import DataVisualization
 
 def main():
-    df = master.init()
+
+    DataVisualization.performDataVis()
+
+
+    #df = master.init()
     #print(df)
 
-    X, y = master.preproc(df)
+    #X, y = master.preproc(df)
 
     #analysis.preliminaryStat(X, df['binary'])
 
@@ -21,7 +26,7 @@ def main():
 
     #master.logistic_regression(X, y)
 
-    master.SVD(X,y)
+    #master.SVD(X,y)
 
 
 if __name__ == "__main__":
