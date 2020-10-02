@@ -120,7 +120,44 @@ def split(x, y, scaled=False):
     return x_train, x_test, y_train, y_test
 
 def select_numerical(x):
+    print('Selecting only numerical attributes')
     x_num = x[['age', 'Medu', 'Fedu', 'traveltime', 'studytime', 'failures', 'famrel',
             'freetime', 'goout', 'Dalc', 'Walc', 'health', 'absences', 'G1', 'G2']]
 
     return x_num;
+
+def PCA_study(x):
+    print('Applying PCA')
+    x_new = np.array(x)
+    x = sklearn.preprocessing.scale(x_new)
+    #print(len(x[0]))
+    pca = sklearn.decomposition.PCA(n_components=45)
+    pca.fit(x)
+    var=np.array(pca.explained_variance_ratio_)
+    cum_var=np.cumsum(var)
+    #print(len(cum_var))
+    """
+    for i in range(0,45):
+        print('La varianza spiegata per {} componenti è {}'.format(i+1,cum_var[i]))
+    """
+    #24 componenti -> 0.84
+    #27 componenti -> 0.86
+    #30 componenti -> 0.90
+    #38 componenti -> 0.99
+
+    xrange = range(1,46)
+    plt.scatter(xrange, cum_var)
+    plt.grid(axis='y')
+    plt.xlabel('Components of PCA')
+    plt.ylabel('Variance explained')
+    plt.title('Cumulative variance explained for different numbers of components of PCA')
+    plt.xticks(np.arange(0, 47, 2))
+    plt.yticks(np.arange(0, 1.1, 0.1))
+    plt.show()
+
+def PCA(x,components):
+    x_new = np.array(x)
+    x = sklearn.preprocessing.scale(x_new)
+    pca = sklearn.decomposition.PCA(n_components=components)
+    x_pca=pca.fit_transform(x)
+    return x_pca

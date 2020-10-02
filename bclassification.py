@@ -15,6 +15,7 @@ from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 
 
 def kNN(x, y, onlynum=False, search=False, cv=True, k_cv=5, onlycv=False):
+    print('kNN classifier')
     ####################
     # KNN
     ####################
@@ -97,6 +98,7 @@ def kNN(x, y, onlynum=False, search=False, cv=True, k_cv=5, onlycv=False):
 
 
 def LDA(x,y, onlycv=False, testacc=False):
+    print('LDA classifier')
     #testacc=True -> stampa la test (validaton) accuracy (se onlycv=False)
     #onlycv=True -> stampa solo la cross validation accuracy
 
@@ -127,6 +129,7 @@ def LDA(x,y, onlycv=False, testacc=False):
 
 
 def logistic_regression(x,y, C_cv=1, search=False, cv=True, onlycv=False):
+    print('Logistic regression classifier')
     #nella logistic_regression non c'è bisogno di fare nessuna operazione di standardizzazione
 
     x_train, x_test, y_train, y_test = master.split(x,y)
@@ -184,8 +187,8 @@ def logistic_regression(x,y, C_cv=1, search=False, cv=True, onlycv=False):
             print()
 
 
-def SVD(x,y, search=False, cv=True, C_cv=0.01, mode_cv='linear', onlycv=False):
-
+def SVM(x,y, search=False, cv=True, C_cv=0.01, mode_cv='linear', onlycv=False):
+    print('SVM classifier')
     x_train, x_test, y_train, y_test = master.split(x,y)
 
     #normalizzazione?
@@ -282,7 +285,8 @@ def SVD(x,y, search=False, cv=True, C_cv=0.01, mode_cv='linear', onlycv=False):
     #10-fold cross validation accuracy for k=5 is: 0.9259855769230769 -> sembra ottimo!
 
 
-def SVD_unbalanced(x,y, search=False, cv=True, weight_cv=1.25, onlycv=False):
+def SVM_unbalanced(x,y, search=False, cv=True, weight_cv=1.25, onlycv=False):
+    print('SVM unbalanced classifier')
     # script per classi non bilanciate -> da provare e capire se si può applicare anche agli altri
     # https://scikit-learn.org/stable/auto_examples/svm/plot_separating_hyperplane_unbalanced.html#sphx-glr-auto-examples-svm-plot-separating-hyperplane-unbalanced-py
 
