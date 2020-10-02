@@ -17,7 +17,7 @@ def main():
 
     #analysis.heatMap(X,y)
 
-    bclassification.kNN(X, y, search=True, cv=False)
+    #bclassification.kNN(X, y, search=True, cv=False)
 
     #bclassification.kNN(X,y,onlynum=True, search=True, cv=False)
 
@@ -28,11 +28,16 @@ def main():
     #bclassification.kNN(X,y,onlynum=True)
 
     #metto prima lda che fa un po' schifo
-    #master.LDA(X,y)
+    #bclassification.LDA(X,y)
 
-    #master.logistic_regression(X, y)
+    #bclassification.logistic_regression(X, y, search=True)
 
-    #master.SVD(X,y)
+    #bclassification.SVD(X,y,search=True,cv=False)
+    bclassification.SVD(X,y)
+
+    #bclassification.SVD_unbalanced(X,y,search=True, cv=False)
+    bclassification.SVD_unbalanced(X,y)
+
 
 
 if __name__ == "__main__":
