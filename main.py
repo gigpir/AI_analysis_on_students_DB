@@ -5,7 +5,7 @@ import bclassification
 
 def main():
 
-    DataVisualization.performDataVis()
+    #DataVisualization.performDataVis()
 
 
     df = master.init()
