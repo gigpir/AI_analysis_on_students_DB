@@ -84,3 +84,5 @@ def performDataVis():
     figure.grid(False)
     plt.title('Age Distribution')
     plt.savefig('./EDA/age.png', bbox_inches='tight')
+
+    
