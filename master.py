@@ -1,14 +1,17 @@
 # import pandas as pd
 # from sklearn import metrics
+from collections import Counter
+
 import pandas as pd
 import numpy as np
 import os
 import sklearn
+import imblearn
 # from sklearn.model_selection import cross_val_score
 from sklearn import metrics
 # from sklearn.neighbors import KNeighborsClassifier
 from sklearn.neighbors import KNeighborsClassifier
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import train_test_split, KFold
 from sklearn.model_selection import cross_val_score
 import matplotlib.pyplot as plt
 
@@ -161,3 +164,31 @@ def PCA(x,components):
     pca = sklearn.decomposition.PCA(n_components=components)
     x_pca=pca.fit_transform(x)
     return x_pca
+
+def SMOTE(x,y):
+    categoric1=[0,1,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42]
+    categoric2=[0,1,3,4,5,11,12,13,14,15,16,17,18,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42]
+    smote_nc= imblearn.over_sampling.SMOTENC(categorical_features=categoric1,random_state=0)
+    X_resampled, y_resampled= smote_nc.fit_resample(x,y)
+    #print('Dataset after resampling:')
+    #print(sorted(Counter(y_resampled).items()))
+    return X_resampled,y_resampled
+
+def cv_SMOTE(model, X, y):
+    X = np.array(X)
+    y = np.array(y)
+    y = np.ravel(y)
+    kf = KFold(n_splits=10)
+    score=[]
+    for (train_index, test_index) in kf.split(X):
+        X_train = X[train_index]
+        y_train = y[train_index]
+        y_train= np.ravel(y_train)
+        X_test = X[test_index]
+        y_test = y[test_index]
+        y_test= np.ravel(y_test)
+        X_train_oversampled, y_train_oversampled = SMOTE(X_train, y_train)
+        model.fit(X_train_oversampled, y_train_oversampled)
+        y_pred = model.predict(X_test)
+        score.append(model.score(X_test,y_test))
+    return np.mean(score)

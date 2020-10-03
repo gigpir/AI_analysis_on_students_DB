@@ -8,10 +8,10 @@ def main():
     DataVisualization.performDataVis()
 
 
-    #df = master.init()
+    df = master.init()
     #print(df)
 
-    #X, y = master.preproc(df)
+    X, y = master.preproc(df)
 
 
     #analysis.preliminaryStat(X, df['binary'])
@@ -50,6 +50,10 @@ def main():
     #bclassification.kNN(X_pca,y,onlycv=True)
     #mi pare di vedere che ho sempre risultati un po' peggiori, anche con 38 componenti
 
+    #bclassification.SVM(X,y,search=True, cv=False)
+    #bclassification.SVM_SMOTE(X,y,search=True, cv=False)
+    #bclassification.SVM(X,y)
+    bclassification.SVM_SMOTE(X,y)
 
 if __name__ == "__main__":
     main()
