@@ -14,8 +14,11 @@ from tabulate import tabulate
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 
 
-def kNN(x, y, onlynum=False, search=False, cv=True, k_cv=5, onlycv=False):
-    print('kNN classifier')
+def kNN(x, y, onlynum=False, search=False, cv=True, k_cv=5, onlycv=False, smote=False):
+    if not smote:
+        print('kNN classifier')
+    else:
+        print('kNN classifier with SMOTE')
     ####################
     # KNN
     ####################
@@ -35,6 +38,8 @@ def kNN(x, y, onlynum=False, search=False, cv=True, k_cv=5, onlycv=False):
     if onlynum:
         x=master.select_numerical(x)
     x_train, x_test, y_train, y_test = master.split(x, y, scaled=True)
+    if smote:
+        x_train,y_train=master.SMOTE(x_train, y_train)
 
     if search:
         score_train = []
@@ -85,6 +90,8 @@ def kNN(x, y, onlynum=False, search=False, cv=True, k_cv=5, onlycv=False):
         neigh.fit(x_train, y_train)
         y_pred = neigh.predict(x_test)
         cv_accuracy=np.mean(cross_val_score(neigh, x, y, cv=10))
+        if smote:
+            cv_accuracy=master.cv_SMOTE(neigh,x,y)
         matrix = metrics.confusion_matrix(y_test, y_pred, normalize="true")
         print("10-fold cross validation accuracy for k=5 is:", cv_accuracy)
         print()
@@ -97,13 +104,18 @@ def kNN(x, y, onlynum=False, search=False, cv=True, k_cv=5, onlycv=False):
             print()
 
 
-def LDA(x,y, onlycv=False, testacc=False):
-    print('LDA classifier')
+def LDA(x,y, onlycv=False, testacc=False, smote=False):
+    if not smote:
+        print('LDA classifier')
+    else:
+        print('LDA classifier with SMOTE')
     #testacc=True -> stampa la test (validaton) accuracy (se onlycv=False)
     #onlycv=True -> stampa solo la cross validation accuracy
 
 
     x_train, x_test, y_train, y_test = master.split(x,y)
+    if smote:
+        x_train,y_train= master.SMOTE(x_train,y_train)
 
     clf = LinearDiscriminantAnalysis() #ho provato ad usare lo shrinkage con un solver diverso -> forma di regolarizzazione
     clf.fit(x_train, y_train)           #ma l'accuracy è più o meno la stessa e così non dobbiamo spiegarla nel report :D
@@ -115,6 +127,8 @@ def LDA(x,y, onlycv=False, testacc=False):
         print()
 
     cv_accuracy = np.mean(cross_val_score(clf, x, y, cv=10))
+    if smote:
+        cv_accuracy= master.cv_SMOTE(clf,x,y)
     print("10-fold cross validation accuracy for k=5 is:", cv_accuracy)
     print()
 
@@ -128,11 +142,16 @@ def LDA(x,y, onlycv=False, testacc=False):
         print()
 
 
-def logistic_regression(x,y, C_cv=1, search=False, cv=True, onlycv=False):
-    print('Logistic regression classifier')
+def logistic_regression(x,y, C_cv=1, search=False, cv=True, onlycv=False, smote=False):
+    if not smote:
+        print('Logistic regression classifier')
+    else:
+        print('Logistic regression classifier with SMOTE')
     #nella logistic_regression non c'è bisogno di fare nessuna operazione di standardizzazione
 
     x_train, x_test, y_train, y_test = master.split(x,y)
+    if smote:
+        x_train,y_train= master.SMOTE(x_train,y_train)
 
     score_train = []
     score_test = []
@@ -174,6 +193,8 @@ def logistic_regression(x,y, C_cv=1, search=False, cv=True, onlycv=False):
         clf.fit(x_train, y_train)
         y_pred = clf.predict(x_test)
         cv_accuracy=np.mean(cross_val_score(clf, x, y, cv=10))
+        if smote:
+            cv_accuracy=master.cv_SMOTE(clf,x.y)
         print("10-fold cross validation accuracy for C={} is:".format(C_cv), cv_accuracy)
         print()
 
@@ -187,10 +208,16 @@ def logistic_regression(x,y, C_cv=1, search=False, cv=True, onlycv=False):
             print()
 
 
-def SVM(x,y, search=False, cv=True, C_cv=0.01, mode_cv='linear', onlycv=False):
-    print('SVM classifier')
+def SVM(x,y, search=False, cv=True, C_cv=0.01, mode_cv='linear', onlycv=False, smote=False):
+    if not smote:
+        print('SVM classifier')
+    else:
+        print('SVM classifier with SMOTE')
+
     x_train, x_test, y_train, y_test = master.split(x,y)
 
+    if smote:
+        x_train, y_train = master.SMOTE(x_train, y_train)
     #normalizzazione?
     #non credo influisca, alla fine otterrei solo un iperpiano deformato
 
@@ -272,92 +299,8 @@ def SVM(x,y, search=False, cv=True, C_cv=0.01, mode_cv='linear', onlycv=False):
         clf=sklearn.svm.SVC(C=C_cv,kernel=mode_cv).fit(x_train,y_train)
         y_pred = clf.predict(x_test)
         cv_accuracy=np.mean(cross_val_score(clf, x, y, cv=10))
-        print("10-fold cross validation accuracy for C={} and {} kernel is:".format(C_cv,mode_cv), cv_accuracy)
-        print()
-
-        if not onlycv:
-            matrix = metrics.confusion_matrix(y_test, y_pred, normalize="true")
-            print("Confusion matrix for C={} and {} kernel normalized by true categories (rows):".format(C_cv, mode_cv))
-            print(matrix)
-            print()
-            print("Report del test set per fattore di penalizzazione C={} and {} kernel".format(C_cv, mode_cv))
-            print(sklearn.metrics.classification_report(y_pred, y_test))
-    #10-fold cross validation accuracy for k=5 is: 0.9259855769230769 -> sembra ottimo!
-
-
-def SVM_SMOTE(x,y, search=False, cv=True, C_cv=100, mode_cv='rbf', onlycv=False):
-    print('SVM classifier with SMOTE')
-    x_train, x_test, y_train, y_test = master.split(x,y)
-    x_train, y_train=master.SMOTE(x_train,y_train)
-
-    #normalizzazione?
-    #non credo influisca, alla fine otterrei solo un iperpiano deformato
-
-    if search:
-        #RBF KERNEL
-        score_train = []
-        score_test = []
-        print1 = ['Train score']
-        print2 = ['Test score']
-
-        for c in np.multiply([0.001, 0.01,0.1,1,10,100],100):
-            clf= sklearn.svm.SVC(C=c,kernel='rbf').fit(x_train,y_train)
-            y_pred_train=clf.predict(x_train)
-            y_pred_test=clf.predict(x_test)
-            score_train.append(metrics.accuracy_score(y_pred_train, y_train))
-            score_test.append(metrics.accuracy_score(y_pred_test, y_test))
-            print1.append(metrics.accuracy_score(y_pred_train, y_train))
-            print2.append(metrics.accuracy_score(y_pred_test, y_test))
-
-        header=[' ']
-        for i in np.multiply([0.001, 0.01,0.1,1,10,100],100):
-            header.append("C={}".format(i))
-        print('RBF kernel')
-        print(tabulate([print1,print2],headers=header))
-        print()
-
-        #LINEAR KERNEL
-        score_train = []
-        score_test = []
-        print1 = ['Train score']
-        print2 = ['Test score']
-        for c in [0.001, 0.01,0.1,1,10,100]:
-            clf= sklearn.svm.SVC(C=c,kernel='linear').fit(x_train,y_train)
-            y_pred_train=clf.predict(x_train)
-            y_pred_test=clf.predict(x_test)
-            score_train.append(metrics.accuracy_score(y_pred_train, y_train))
-            score_test.append(metrics.accuracy_score(y_pred_test, y_test))
-            print1.append(metrics.accuracy_score(y_pred_train, y_train))
-            print2.append(metrics.accuracy_score(y_pred_test, y_test))
-
-        header = [' ']
-        for i in [0.001, 0.01,0.1,1,10,100]:
-            header.append("C={}".format(i))
-        print('Linear kernel')
-        print(tabulate([print1, print2], headers=header))
-        print()
-
-        #il lineare probabilmente va meglio perchè abbiamo molti attributi 0-1 che sono linearmente separabili
-        #il migliore con il kernel lineare sembra essere C=0.01
-
-        #plot training and test
-        xrange = [0.001, 0.01,0.1,1,10,100]
-        error_train = np.ones(len(xrange)) - score_train
-        error_test = np.ones(len(xrange)) - score_test
-        plt.plot(xrange, error_train, label="train score error")
-        plt.plot(xrange, error_test, label="test score error")
-        plt.xscale('log')
-        plt.xlabel('C')
-        plt.ylabel('Accuracy')
-        plt.title('SVM with linear kernel train and test score accuracy for different C')
-        plt.legend()
-        plt.show()
-
-    #calcolo confusion matrix e cv accuracy
-    if cv:
-        clf=sklearn.svm.SVC(C=C_cv,kernel=mode_cv).fit(x_train,y_train)
-        y_pred = clf.predict(x_test)
-        cv_accuracy=master.cv_SMOTE(clf,x,y)
+        if smote:
+            cv_accuracy = master.cv_SMOTE(clf, x, y)
         print("10-fold cross validation accuracy for C={} and {} kernel is:".format(C_cv,mode_cv), cv_accuracy)
         print()
 

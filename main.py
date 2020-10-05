@@ -24,20 +24,20 @@ def main():
 
     #bclassification.kNN(X, y)
 
-    #bclassification.kNN(X, y, onlycv=True)
+    #bclassification.kNN(X, y, onlycv=True) #0.899
 
-    #bclassification.kNN(X,y,onlynum=True, onlycv=True)
+    #bclassification.kNN(X,y,onlynum=True, onlycv=True) #0.9075
 
     #metto prima lda che fa un po' schifo
-    #bclassification.LDA(X,y)
+    #bclassification.LDA(X,y) #0.8828
 
-    #bclassification.logistic_regression(X, y, onlycv=True)
+    #bclassification.logistic_regression(X, y, onlycv=True) #0.9105
 
-    #bclassification.SVD(X,y,search=True,cv=False)
-    #bclassification.SVM(X, y, onlycv=True)
+    #bclassification.SVM(X,y,search=True,cv=False)
+    #bclassification.SVM(X, y)
 
-    #bclassification.SVD_unbalanced(X,y,search=True, cv=False)
-    #bclassification.SVD_unbalanced(X,y, onlycv=True)
+    #bclassification.SVM_unbalanced(X,y,search=True, cv=False)
+    #bclassification.SVM_unbalanced(X,y, onlycv=True)
 
     #master.PCA_study(X)
 
@@ -51,9 +51,8 @@ def main():
     #mi pare di vedere che ho sempre risultati un po' peggiori, anche con 38 componenti
 
     #bclassification.SVM(X,y,search=True, cv=False)
-    #bclassification.SVM_SMOTE(X,y,search=True, cv=False)
-    #bclassification.SVM(X,y)
-    bclassification.SVM_SMOTE(X,y)
+    #bclassification.SVM(X,y, smote=True,C_cv=100, mode_cv='rbf')
+
 
 if __name__ == "__main__":
     main()
