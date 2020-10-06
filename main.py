@@ -7,12 +7,17 @@ def main():
 
     #DataVisualization.performDataVis()
 
+    master.studydatasets()
+
+    #df= master.init_alternative('por')
+    #X,y = master.preproc_alternative(df)
 
     df = master.init()
     #print(df)
 
     X, y = master.preproc(df)
 
+    #bclassification.SVM(X,y, onlycv=True)
 
     #analysis.preliminaryStat(X, df['binary'])
 

@@ -3,6 +3,10 @@ import pandas as pd
 import sklearn
 import matplotlib.pyplot as plt
 import seaborn as sns
+import plotly.graph_objects as go
+import plotly.io as pio
+import matplotlib.colors as colors
+from plotly.offline import plot
 
 verbose = False
 
@@ -536,3 +540,4 @@ def performDataVis():
     plt.savefig('./EDA/GRADE-BY_plot/Grade_freetime_status.png', bbox_inches='tight')
 
     data.to_csv('./input/features.csv', index=False, sep=';')
+
