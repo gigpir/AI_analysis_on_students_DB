@@ -261,6 +261,8 @@ def preproc(df):
 
     y = db['binary']
 
+    db.to_csv('./student_preproc.csv', index=False, sep=';')
+
     return x, y
 
 def studydatasets():

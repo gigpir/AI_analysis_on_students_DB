@@ -7,7 +7,7 @@ def main():
 
     #DataVisualization.performDataVis()
 
-    master.studydatasets()
+    #master.studydatasets()
 
     #df= master.init_alternative('por')
     #X,y = master.preproc_alternative(df)
@@ -16,6 +16,8 @@ def main():
     #print(df)
 
     X, y = master.preproc(df)
+
+    bclassification.decisionTree(X, y)
 
     #bclassification.SVM(X,y, onlycv=True)
 

@@ -12,7 +12,12 @@ import matplotlib.pyplot as plt
 import master
 from tabulate import tabulate
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
-
+from sklearn import tree
+from sklearn.metrics import confusion_matrix
+from six import StringIO
+from IPython.display import Image
+from sklearn.tree import export_graphviz
+import pydotplus
 
 def kNN(x, y, onlynum=False, search=False, cv=True, k_cv=5, onlycv=False, smote=False):
     if not smote:
@@ -368,3 +373,37 @@ def SVM_unbalanced(x,y, search=False, cv=True, weight_cv=1.25, onlycv=False):
             print("Report del test set per weight=", weight_cv)
             print(sklearn.metrics.classification_report(y_pred, y_test))
             print()
+
+
+def decisionTree(x, y):
+
+    clf = tree.DecisionTreeClassifier(criterion = 'entropy', random_state = 0)
+
+    x_train, x_test, y_train, y_test = master.split(x, y)
+
+    clf = clf.fit(x_train, y_train)
+
+    y_pred_train = clf.predict(x_train)
+    y_pred_test = clf.predict(x_test)
+
+    # Making the Confusion Matrix
+
+    cm = confusion_matrix(y_test, y_pred_test)
+
+    score_train = metrics.accuracy_score(y_pred_train, y_train)
+    score_test = metrics.accuracy_score(y_pred_test, y_test)
+
+    print('Train Score: '+str(score_train))
+    print('Test Score: '+str(score_test))
+
+
+
+def randomForest(x,y):
+
+    return None
+
+
+
+
+
+
