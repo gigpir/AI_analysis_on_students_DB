@@ -376,7 +376,7 @@ def SVM_unbalanced(x,y, search=False, cv=True, weight_cv=1.25, onlycv=False):
 
 
 def decisionTree(x, y):
-
+    print('Decision Tree Classifier')
     clf = tree.DecisionTreeClassifier(criterion = 'entropy', random_state = 0)
 
     x_train, x_test, y_train, y_test = master.split(x, y)
