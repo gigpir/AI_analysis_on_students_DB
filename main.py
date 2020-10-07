@@ -19,6 +19,7 @@ def main():
 
     bclassification.decisionTree(X, y)
 
+    bclassification.randomForest(X, y)
     #bclassification.SVM(X,y, onlycv=True)
 
     #analysis.preliminaryStat(X, df['binary'])

@@ -399,6 +399,33 @@ def decisionTree(x, y):
 
 
 def randomForest(x,y):
+    # Random Forest Classifier
+    print('Random Forest Classifier')
+
+    X_Train, X_Test, Y_Train, Y_Test = train_test_split(x, y, random_state=0)
+
+    # Fitting the classifier into the Training set
+
+    from sklearn.ensemble import RandomForestClassifier
+    classifier = RandomForestClassifier(n_estimators=200, criterion='entropy', random_state=0)
+    classifier.fit(X_Train, Y_Train)
+
+    # Predicting the test set results
+
+    Y_Pred = classifier.predict(X_Test)
+
+    # Making the Confusion Matrix
+
+    from sklearn.metrics import confusion_matrix
+    cm = confusion_matrix(Y_Test, Y_Pred)
+
+
+    y_pred_train = classifier.predict(X_Train)
+    y_pred_test = classifier.predict(X_Test)
+    score_train = metrics.accuracy_score(y_pred_train, Y_Train)
+    score_test = metrics.accuracy_score(y_pred_test, Y_Test)
+    print('Train Score: ' + str(score_train))
+    print('Test Score: ' + str(score_test))
 
     return None
 
