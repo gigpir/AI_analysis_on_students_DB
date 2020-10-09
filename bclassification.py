@@ -14,10 +14,12 @@ from tabulate import tabulate
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 from sklearn import tree
 from sklearn.metrics import confusion_matrix
-from six import StringIO
-from IPython.display import Image
-from sklearn.tree import export_graphviz
-import pydotplus
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.tree import export_text
+#from six import StringIO
+#from IPython.display import Image
+#from sklearn.tree import export_graphviz
+#import pydotplus
 
 def kNN(x, y, onlynum=False, search=False, cv=True, k_cv=5, onlycv=False, smote=False):
     if not smote:
@@ -375,11 +377,22 @@ def SVM_unbalanced(x,y, search=False, cv=True, weight_cv=1.25, onlycv=False):
             print()
 
 
-def decisionTree(x, y):
-    print('Decision Tree Classifier')
-    clf = tree.DecisionTreeClassifier(criterion = 'entropy', random_state = 0)
+def decisionTree(x, y, feature_names, onlycv=False, smote=False):
+    #per fare un print leggibile devo passargli il nome degli attributi
+    #DecisionTreeClassifier non accetta attributi categorici
+
+    if not smote:
+        print('Decision Tree Classifier')
+    else:
+        print('Decision Tree Classifier with SMOTE')
 
     x_train, x_test, y_train, y_test = master.split(x, y)
+
+    if smote:
+        x_train,y_train=master.SMOTE(x_train,y_train)
+
+    clf = tree.DecisionTreeClassifier(criterion = 'entropy', random_state = 0) #cv_acc= 0.91055
+    #clf = tree.DecisionTreeClassifier(criterion='gini', random_state=0) #cv_acc=0.89514
 
     clf = clf.fit(x_train, y_train)
 
@@ -388,49 +401,112 @@ def decisionTree(x, y):
 
     # Making the Confusion Matrix
 
-    cm = confusion_matrix(y_test, y_pred_test)
+    cm = confusion_matrix(y_test, y_pred_test, normalize="true")
 
     score_train = metrics.accuracy_score(y_pred_train, y_train)
     score_test = metrics.accuracy_score(y_pred_test, y_test)
 
-    print('Train Score: '+str(score_train))
-    print('Test Score: '+str(score_test))
+    if not onlycv:
+        print('The features sorting by descending importance are:')
+        importance= clf.feature_importances_
+        dictionary=dict(zip(feature_names,importance))
+        dictionary=sorted(dictionary.items(), key=lambda x: x[1], reverse=True)
+        for i in dictionary:
+            if i[1]>0:
+                print(i)
+        #print(dictionary) #da associare alle colonne
+        print()
+
+        #r=export_text(clf, feature_names=feature_names)
+        #print(r)
+
+        fig = plt.figure(figsize=(25, 20))
+        _ = tree.plot_tree(clf,
+                           feature_names=feature_names,
+                           class_names=['fail','pass'],
+                           filled=True)
+        fig.savefig("./decision_tree/decistion_tree.png")
+
+        print("Confusion matrix normalized by true categories (rows):")
+        print(cm)
+        print()
+        print("Report del test set")
+        print(sklearn.metrics.classification_report(y_pred_test, y_test))
+        #print('Train Score: '+str(score_train))
+        #print('Test Score: '+str(score_test))
+        #print()
+
+    cv_accuracy = np.mean(cross_val_score(clf, x, y, cv=10))
+    if smote:
+        cv_accuracy=master.cv_SMOTE(clf,x,y)
+    print('Cross validation accuracy:',cv_accuracy)
 
 
-
-def randomForest(x,y):
+def randomForest(x,y, feature_names, search=False, cv=True, onlycv=False, crit_cv='gini', n_cv=100, smote=False):
     # Random Forest Classifier
-    print('Random Forest Classifier')
+    if not smote:
+        print('Random Forest Classifier')
+    else:
+        print('Random Forest Classifier with SMOTE')
 
-    X_Train, X_Test, Y_Train, Y_Test = train_test_split(x, y, random_state=0)
+    x_train, x_test, y_train, y_test = train_test_split(x, y, random_state=0)
+    if smote:
+        x_train, y_train = master.SMOTE(x_train, y_train)
 
     # Fitting the classifier into the Training set
+    # Grid search for criterion and n_estimators
 
-    from sklearn.ensemble import RandomForestClassifier
-    classifier = RandomForestClassifier(n_estimators=200, criterion='entropy', random_state=0)
-    classifier.fit(X_Train, Y_Train)
+    print_e = ['Test score with entropy criterion']
+    print_g = ['Test score with gini criterion']
+    if search:
+        for crit in ['entropy', 'gini']:
+            for n in [10,50,100,200,500]:
+                classifier = RandomForestClassifier(n_estimators=n, criterion=crit, random_state=0)
+                classifier.fit(x_train, y_train)
+                y_pred_train = classifier.predict(x_train)
+                y_pred_test = classifier.predict(x_test)
+                score_train = metrics.accuracy_score(y_pred_train, y_train)
+                score_test = metrics.accuracy_score(y_pred_test, y_test)
+                if crit=='entropy':
 
+                    print_e.append(score_test)
+                else:
+
+                    print_g.append(score_test)
+                #print('Train Scorefor {} estimators and {} criterion:'.format(n,crit)+ str(score_train)) #per n>10 è sempre 1
+                #print('Test Score for {} estimators and {} criterion:'.format(n,crit) + str(score_test))
     # Predicting the test set results
+    header=[]
+    for i in [10,50,100,200,500]:
+        header.append("n={}".format(i))
+    print(tabulate([print_e, print_g], headers=header))
+    print()
 
-    Y_Pred = classifier.predict(X_Test)
+    if cv:
+        classifier= RandomForestClassifier(n_estimators=n_cv, criterion=crit_cv, random_state=0)
+        classifier.fit(x_train, y_train)
+        y_pred_test = classifier.predict(x_test)
+        cv_accuracy = np.mean(cross_val_score(classifier, x, y, cv=10))
+        if smote:
+            cv_accuracy=master.cv_SMOTE(classifier,x,y)
+        print("10-fold cross validation accuracy for {} estimators and {} criterion is:".format(n_cv,crit_cv), cv_accuracy)
+        print()
 
-    # Making the Confusion Matrix
-
-    from sklearn.metrics import confusion_matrix
-    cm = confusion_matrix(Y_Test, Y_Pred)
-
-
-    y_pred_train = classifier.predict(X_Train)
-    y_pred_test = classifier.predict(X_Test)
-    score_train = metrics.accuracy_score(y_pred_train, Y_Train)
-    score_test = metrics.accuracy_score(y_pred_test, Y_Test)
-    print('Train Score: ' + str(score_train))
-    print('Test Score: ' + str(score_test))
-
-    return None
-
-
-
-
-
-
+        if not onlycv:
+            # Making the Confusion Matrix
+            cm = confusion_matrix(y_test, y_pred_test, normalize='true')
+            print("Confusion matrix for {} estimators and {} criterion is:".format(n_cv,crit_cv))
+            print(cm)
+            print()
+            print("Report del test set per {} estimators and {} criterion is:".format(n_cv,crit_cv))
+            print(sklearn.metrics.classification_report(y_pred_test, y_test))
+            print()
+            print('The features sorting by descending importance are:')
+            importance = classifier.feature_importances_
+            dictionary = dict(zip(feature_names, importance))
+            dictionary = sorted(dictionary.items(), key=lambda x: x[1], reverse=True)
+            for i in dictionary:
+                if i[1] > 0:
+                    print(i)
+            # print(dictionary) #da associare alle colonne
+            print()

@@ -15,11 +15,14 @@ def main():
     df = master.init()
     #print(df)
 
-    X, y = master.preproc(df)
+    X, y, feature_names = master.preproc(df)
 
-    bclassification.decisionTree(X, y)
+    #bclassification.decisionTree(X,y, feature_names)
+    #bclassification.decisionTree(X, y, feature_names, onlycv=True)
+    #bclassification.decisionTree(X,y, feature_names, onlycv=True, smote=True)
 
-    bclassification.randomForest(X, y)
+    bclassification.randomForest(X, y, feature_names, search=True)
+
     #bclassification.SVM(X,y, onlycv=True)
 
     #analysis.preliminaryStat(X, df['binary'])

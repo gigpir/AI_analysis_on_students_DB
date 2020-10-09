@@ -179,8 +179,8 @@ def preproc_alternative(df, select='all'):
         print("Invalid value of select, valid values are: 'all', 'G1', 'G2', 'novotes'")
 
     y = db['binary']
-
-    return x, y
+    feature_names= x.columns
+    return x, y, feature_names
 
 def preproc(df):
     ####################
@@ -262,8 +262,10 @@ def preproc(df):
     y = db['binary']
 
     db.to_csv('./student_preproc.csv', index=False, sep=';')
-
-    return x, y
+    feature_names= x.columns
+    #print(type(feature_names))
+    #print(feature_names)
+    return x, y, feature_names.tolist()
 
 def studydatasets():
 
