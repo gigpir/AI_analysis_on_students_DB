@@ -426,6 +426,7 @@ def decisionTree(x, y, feature_names, onlycv=False, smote=False):
                            class_names=['fail','pass'],
                            filled=True)
         fig.savefig("./decision_tree/decistion_tree.png")
+        plt.close('all')
 
         print("Confusion matrix normalized by true categories (rows):")
         print(cm)

@@ -4,6 +4,7 @@ from collections import Counter
 
 import pandas as pd
 import numpy as np
+import sys
 import os
 import sklearn
 import imblearn
@@ -16,18 +17,9 @@ from sklearn.model_selection import cross_val_score
 import matplotlib.pyplot as plt
 
 
-def init():
-    ####################
-    # IMPORT DATASET
-    ####################
-    os.listdir(os.getcwd())
-    df = pd.read_csv("./student-por-new.csv", sep=";")
-    # print(df.head())
-    # print(df.columns)
-    # df.info()
-    return df
 
-def init_alternative(dataframe='por'):
+
+def init(dataframe='por'):
     ####################
     # IMPORT DATASET
     ####################
@@ -37,6 +29,7 @@ def init_alternative(dataframe='por'):
         df = pd.read_csv("./student-mat.csv", sep=";")
     else:
         print("Input errato: usare dataframe='por' o dataframe='mat'")
+        sys.exit()
     # print(df.head())
     # print(df.columns)
     # df.info()
@@ -60,7 +53,7 @@ def label_5_class(row):
         else:
             return 'excellent'
 
-def preproc_alternative(df, select='all'):
+def preproc(df, select='all'):
     ###################################
     # CREATE BINARY AND 5-CLASS COLUMNS
     ###################################
@@ -177,95 +170,11 @@ def preproc_alternative(df, select='all'):
                 'guardian_mother', 'guardian_other']]
     else:
         print("Invalid value of select, valid values are: 'all', 'G1', 'G2', 'novotes'")
+        sys.exit()
 
     y = db['binary']
     feature_names= x.columns
     return x, y, feature_names
-
-def preproc(df):
-    ####################
-    # PREPROCESSING
-    ####################
-
-    # Create a map to perform mapping of binary attributes ONLY
-
-    replace_binary_attributes_map = {'school': {'GP': 0, 'MS': 1},
-                                     # school - student's school (binary: 'GP' - Gabriel Pereira or 'MS' - Mousinho da Silveira)
-                                     'sex': {'F': 0, 'M': 1},
-                                     # sex - student's sex (binary: 'F' - female or 'M' - male)
-                                     'address': {'U': 0, 'R': 1},
-                                     # address - student's home address type (binary: 'U' - urban or 'R' - rural)
-                                     'famsize': {'LE3': 0, 'GT3': 1},
-                                     # famsize - family size (binary: 'LE3' - less or equal to 3 or 'GT3' - greater than 3)
-                                     'Pstatus': {'T': 0, 'A': 1},
-                                     # Pstatus - parent's cohabitation status (binary: 'T' - living together or 'A' - apart)
-                                     'schoolsup': {'yes': 1, 'no': 0},
-                                     # schoolsup - extra educational support (binary: yes or no)
-                                     'famsup': {'yes': 1, 'no': 0},
-                                     # famsup - family educational support (binary: yes or no)
-                                     'paid': {'yes': 1, 'no': 0},
-                                     # paid - extra paid classes within the course subject (Math or Portuguese) (binary: yes or no)
-                                     'activities': {'yes': 1, 'no': 0},
-                                     # activities - extra-curricular activities (binary: yes or no)
-                                     'nursery': {'yes': 1, 'no': 0},
-                                     # nursery - attended nursery school (binary: yes or no)
-                                     'higher': {'yes': 1, 'no': 0},
-                                     # higher - wants to take higher education (binary: yes or no)
-                                     'internet': {'yes': 1, 'no': 0},
-                                     # internet - Internet access at home (binary: yes or no)
-                                     'romantic': {'yes': 1, 'no': 0},
-                                     # romantic - with a romantic relationship (binary: yes or no)
-                                     'binary': {'pass': 1, 'fail': 0},  # “pass” if G3>=10 else “fail”
-                                     }
-
-    df_2 = df.copy()
-
-    df_2.replace(replace_binary_attributes_map, inplace=True)
-
-    pd.set_option('display.max_columns', None)
-    # print(df.head())
-    # print(df_2.head())
-    # print(df_2['Mjob'].value_counts())
-
-    # Encode categorical data into new binary labels
-    df_2 = pd.get_dummies(df_2, columns=['Mjob'])
-    df_2 = pd.get_dummies(df_2, columns=['Fjob'])
-    df_2 = pd.get_dummies(df_2, columns=['reason'])
-    df_2 = pd.get_dummies(df_2, columns=['guardian'])
-
-    # print(df_2.head())
-
-    # print(df_2.columns)
-
-    # Re order the table
-    db = df_2[['school', 'sex', 'age', 'address', 'famsize', 'Pstatus', 'Medu', 'Fedu',
-               'traveltime', 'studytime', 'failures', 'schoolsup', 'famsup', 'paid',
-               'activities', 'nursery', 'higher', 'internet', 'romantic', 'famrel',
-               'freetime', 'goout', 'Dalc', 'Walc', 'health', 'absences', 'Mjob_at_home', 'Mjob_health', 'Mjob_other',
-               'Mjob_services', 'Mjob_teacher', 'Fjob_at_home', 'Fjob_health',
-               'Fjob_other', 'Fjob_services', 'Fjob_teacher', 'reason_course',
-               'reason_home', 'reason_other', 'reason_reputation', 'guardian_father',
-               'guardian_mother', 'guardian_other', 'G1', 'G2',
-               'G3', 'binary', '5-class']]
-
-    # print(db.head())
-
-    x = db[['school', 'sex', 'age', 'address', 'famsize', 'Pstatus', 'Medu', 'Fedu',
-            'traveltime', 'studytime', 'failures', 'schoolsup', 'famsup', 'paid',
-            'activities', 'nursery', 'higher', 'internet', 'romantic', 'famrel',
-            'freetime', 'goout', 'Dalc', 'Walc', 'health', 'absences', 'Mjob_at_home', 'Mjob_health', 'Mjob_other',
-            'Mjob_services', 'Mjob_teacher', 'Fjob_at_home', 'Fjob_health',
-            'Fjob_other', 'Fjob_services', 'Fjob_teacher', 'reason_course',
-            'reason_home', 'reason_other', 'reason_reputation', 'guardian_father',
-            'guardian_mother', 'guardian_other', 'G1', 'G2']]
-
-    y = db['binary']
-
-    db.to_csv('./student_preproc.csv', index=False, sep=';')
-    feature_names= x.columns
-    #print(type(feature_names))
-    #print(feature_names)
-    return x, y, feature_names.tolist()
 
 def studydatasets():
 
@@ -326,12 +235,12 @@ def select_numerical(x):
 
     return x_num;
 
-def PCA_study(x):
+def PCA_study(x,feature_names):
     print('Applying PCA')
     x_new = np.array(x)
     x = sklearn.preprocessing.scale(x_new)
     #print(len(x[0]))
-    pca = sklearn.decomposition.PCA(n_components=45)
+    pca = sklearn.decomposition.PCA(n_components=len(feature_names))
     pca.fit(x)
     var=np.array(pca.explained_variance_ratio_)
     cum_var=np.cumsum(var)
@@ -345,8 +254,9 @@ def PCA_study(x):
     #30 componenti -> 0.90
     #38 componenti -> 0.99
 
-    xrange = range(1,46)
+    xrange = range(1,len(feature_names)+1)
     plt.scatter(xrange, cum_var)
+    plt.bar(xrange, var)
     plt.grid(axis='y')
     plt.xlabel('Components of PCA')
     plt.ylabel('Variance explained')
@@ -362,8 +272,8 @@ def PCA(x,components):
     x_pca=pca.fit_transform(x)
     return x_pca
 
-def SMOTE(x,y):
-    categoric1=[0,1,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42]
+def SMOTE(x,y): #provare anche categoric 2
+    categoric1=[0,1,3,4,5,6,7,8,9,10,11,12,13,14,15,1,17,18,19,20,21,22,23,24,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42]
     categoric2=[0,1,3,4,5,11,12,13,14,15,16,17,18,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42]
     smote_nc= imblearn.over_sampling.SMOTENC(categorical_features=categoric1,random_state=0)
     X_resampled, y_resampled= smote_nc.fit_resample(x,y)

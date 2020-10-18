@@ -9,19 +9,19 @@ def main():
 
     #master.studydatasets()
 
-    #df= master.init_alternative('por')
-    #X,y = master.preproc_alternative(df)
+    df= master.init('por')
+    X,y, feature_names = master.preproc(df, select='novotes')
 
-    df = master.init()
+    #df = master.init()
     #print(df)
 
-    X, y, feature_names = master.preproc(df)
+    #X, y, feature_names = master.preproc(df)
 
     #bclassification.decisionTree(X,y, feature_names)
     #bclassification.decisionTree(X, y, feature_names, onlycv=True)
     #bclassification.decisionTree(X,y, feature_names, onlycv=True, smote=True)
 
-    bclassification.randomForest(X, y, feature_names, search=True)
+    #bclassification.randomForest(X, y, feature_names, search=True)
 
     #bclassification.SVM(X,y, onlycv=True)
 
@@ -29,7 +29,7 @@ def main():
 
     #analysis.heatMap(X,y)
 
-    #bclassification.kNN(X, y, search=True, cv=False)
+    bclassification.kNN(X, y, search=True, cv=False)
 
     #bclassification.kNN(X,y,onlynum=True, search=True, cv=False)
 
@@ -50,7 +50,7 @@ def main():
     #bclassification.SVM_unbalanced(X,y,search=True, cv=False)
     #bclassification.SVM_unbalanced(X,y, onlycv=True)
 
-    #master.PCA_study(X)
+    #master.PCA_study(X, feature_names=feature_names)
 
     #X_pca=master.PCA(X,38)
 
