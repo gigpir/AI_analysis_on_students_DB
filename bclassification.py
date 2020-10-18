@@ -21,7 +21,7 @@ from sklearn.tree import export_text
 #from sklearn.tree import export_graphviz
 #import pydotplus
 
-def kNN(x, y, onlynum=False, search=False, cv=True, k_cv=5, onlycv=False, smote=False):
+def kNN(x, y, onlynum=False, search=False, cv=True, k_cv=5, onlycv=False, smote=False, select='all'):
     if not smote:
         print('kNN classifier')
     else:
@@ -43,7 +43,7 @@ def kNN(x, y, onlynum=False, search=False, cv=True, k_cv=5, onlycv=False, smote=
 
     # divisione fra train e test set
     if onlynum:
-        x=master.select_numerical(x)
+        x=master.select_numerical(x, select=select)
     x_train, x_test, y_train, y_test = master.split(x, y, scaled=True)
     if smote:
         x_train,y_train=master.SMOTE(x_train, y_train)
@@ -189,7 +189,7 @@ def logistic_regression(x,y, C_cv=1, search=False, cv=True, onlycv=False, smote=
         plt.plot(xrange, error_test, label="test score error")
         plt.xscale('log')
         plt.xlabel('C')
-        plt.ylabel('Accuracy')
+        plt.ylabel('Score error')
         plt.title('Logistic Regression train and test score error for different values of C')
         plt.legend()
         plt.show()
@@ -296,7 +296,7 @@ def SVM(x,y, search=False, cv=True, C_cv=0.01, mode_cv='linear', onlycv=False, s
         plt.plot(xrange, error_test, label="test score error")
         plt.xscale('log')
         plt.xlabel('C')
-        plt.ylabel('Accuracy')
+        plt.ylabel('Score error')
         plt.title('SVM with linear kernel train and test score accuracy for different C')
         plt.legend()
         plt.show()
@@ -341,7 +341,7 @@ def SVM_unbalanced(x,y, search=False, cv=True, weight_cv=1.25, onlycv=False):
         #class weight funziona come = {valore label : peso da assegnare}
         # non è spiegato bene, penso vada ad operare sulla loss function e penalizza di più classifichi male un punto della
         #label selezionata
-        for weight in [1, 1.1, 1.2, 1.3, 1.4, 1.5]:
+        for weight in [1, 1.2, 1.4, 1.6, 1.8, 2]:
             clf = sklearn.svm.SVC(C=0.01, kernel='linear',class_weight={0:weight}).fit(x_train, y_train)
             y_pred_train = clf.predict(x_train)
             y_pred_test = clf.predict(x_test)
@@ -391,7 +391,7 @@ def decisionTree(x, y, feature_names, onlycv=False, smote=False):
     if smote:
         x_train,y_train=master.SMOTE(x_train,y_train)
 
-    clf = tree.DecisionTreeClassifier(criterion = 'entropy', random_state = 0) #cv_acc= 0.91055
+    clf = tree.DecisionTreeClassifier(criterion = 'entropy', random_state = 0, min_samples_leaf=40) #cv_acc= 0.91055
     #clf = tree.DecisionTreeClassifier(criterion='gini', random_state=0) #cv_acc=0.89514
 
     clf = clf.fit(x_train, y_train)
@@ -462,7 +462,7 @@ def randomForest(x,y, feature_names, search=False, cv=True, onlycv=False, crit_c
     if search:
         for crit in ['entropy', 'gini']:
             for n in [10,50,100,200,500]:
-                classifier = RandomForestClassifier(n_estimators=n, criterion=crit, random_state=0)
+                classifier = RandomForestClassifier(n_estimators=n, criterion=crit, random_state=0,min_samples_leaf=5)
                 classifier.fit(x_train, y_train)
                 y_pred_train = classifier.predict(x_train)
                 y_pred_test = classifier.predict(x_test)

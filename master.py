@@ -228,11 +228,20 @@ def split(x, y, scaled=False):
     y_test = np.ravel(y_test)
     return x_train, x_test, y_train, y_test
 
-def select_numerical(x):
+def select_numerical(x, select='all'):
     print('Selecting only numerical attributes')
-    x_num = x[['age', 'Medu', 'Fedu', 'traveltime', 'studytime', 'failures', 'famrel',
-            'freetime', 'goout', 'Dalc', 'Walc', 'health', 'absences', 'G1', 'G2']]
-
+    if select=='all':
+        x_num = x[['age', 'Medu', 'Fedu', 'traveltime', 'studytime', 'failures', 'famrel',
+                'freetime', 'goout', 'Dalc', 'Walc', 'health', 'absences', 'G1', 'G2']]
+    elif select=='G1':
+        x_num = x[['age', 'Medu', 'Fedu', 'traveltime', 'studytime', 'failures', 'famrel',
+                'freetime', 'goout', 'Dalc', 'Walc', 'health', 'absences', 'G1']]
+    elif select=='G2':
+        x_num = x[['age', 'Medu', 'Fedu', 'traveltime', 'studytime', 'failures', 'famrel',
+                'freetime', 'goout', 'Dalc', 'Walc', 'health', 'absences','G2']]
+    elif select=='novotes':
+        x_num = x[['age', 'Medu', 'Fedu', 'traveltime', 'studytime', 'failures', 'famrel',
+                'freetime', 'goout', 'Dalc', 'Walc', 'health', 'absences']]
     return x_num;
 
 def PCA_study(x,feature_names):
@@ -273,7 +282,7 @@ def PCA(x,components):
     return x_pca
 
 def SMOTE(x,y): #provare anche categoric 2
-    categoric1=[0,1,3,4,5,6,7,8,9,10,11,12,13,14,15,1,17,18,19,20,21,22,23,24,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42]
+    categoric1=[0,1,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42]
     categoric2=[0,1,3,4,5,11,12,13,14,15,16,17,18,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42]
     smote_nc= imblearn.over_sampling.SMOTENC(categorical_features=categoric1,random_state=0)
     X_resampled, y_resampled= smote_nc.fit_resample(x,y)
