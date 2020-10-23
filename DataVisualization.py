@@ -46,6 +46,10 @@ def performDataVis():
     train.to_csv('./student.csv', index=False, sep=';')
 
     data = pd.read_csv('./student.csv', sep=';')
+
+    #Perform dataVis only on Portuguese
+    data = pd.read_csv('./student-por.csv', sep=';')
+
     def correlation(df):
         corr = df.corr()
         fig, ax = plt.subplots(figsize=(20, 15))
@@ -303,7 +307,7 @@ def performDataVis():
     plt.savefig('./EDA/WEND_alcohol_consumption_plot.png', bbox_inches='tight')
 
     # convert finalscore to categorical variable
-    data = pd.read_csv('./student.csv', sep=';')
+    data = pd.read_csv('./student-por.csv', sep=';')
     data['FinalGrade'] = 'na'
     data.loc[(data['G3'] >= 18) & (data['G3'] <= 20), 'FinalGrade'] = 'Excellent'
     data.loc[(data['G3'] >= 15) & (data['G3'] <= 17), 'FinalGrade'] = 'Good'
@@ -540,4 +544,241 @@ def performDataVis():
     plt.savefig('./EDA/GRADE-BY_plot/Grade_freetime_status.png', bbox_inches='tight')
 
     data.to_csv('./input/features.csv', index=False, sep=';')
+
+
+
+
+
+
+    #####################
+    #####################
+    #GRADE-BY BINARY CLASSIFICATION
+
+    # convert finalscore to categorical variable
+    data = pd.read_csv('./student-por.csv', sep=';')
+    data['binary'] = 'na'
+    data.loc[(data['G3'] >= 10) & (data['G3'] <= 20), 'binary'] = 'Pass'
+    data.loc[(data['G3'] >= 0) & (data['G3'] < 10), 'binary'] = 'Fail'
+
+    #####CLOSE FIG TO SAVE MEMORY
+    plt.close('all')
+
+    # relationship status
+    perc = (lambda col: col / col.sum())
+    #index = ['Fail', 'Pass']
+    #index = ['yes', 'no']
+    relationship_index = pd.crosstab(index=data.romantic, columns=data.binary)
+    romantic_index = relationship_index.apply(perc,axis=1)#.reindex(index)
+    romantic_index.plot.bar(fontsize=16, figsize=(14, 8))
+    plt.title('Result By Relationship Status', fontsize=20)
+    plt.ylabel('Percentage of Students', fontsize=16)
+    plt.xlabel('Result', fontsize=16)
+    plt.savefig('./EDA/GRADE-BY_plot_binary/Grade_Relationshipstatus.png', bbox_inches='tight')
+
+    # fam sup status
+    perc = (lambda col: col / col.sum())
+    index = ['Fail', 'Pass']
+    relationship_index = pd.crosstab(index=data.famsup, columns=data.binary)
+    romantic_index = relationship_index.apply(perc,axis=1)#.reindex(index)
+    romantic_index.plot.bar(fontsize=16, figsize=(14, 8))
+    plt.title('Result By family support Status', fontsize=20)
+    plt.ylabel('Percentage of Students', fontsize=16)
+    plt.xlabel('Result', fontsize=16)
+    plt.savefig('./EDA/GRADE-BY_plot_binary/Grade_family support.png', bbox_inches='tight')
+
+    # grade by age plot
+    perc = (lambda col: col / col.sum())
+    #index = ['Fail', 'Pass']
+    #index = [15, 16,17,18,19,20,21,22]
+    relationship_index = pd.crosstab(index=data.age, columns=data.binary)
+    romantic_index = relationship_index.apply(perc, axis=1)#.reindex(index)
+    romantic_index.plot.bar(fontsize=16, figsize=(14, 8))
+    plt.title('Result By age ', fontsize=20)
+    plt.ylabel('Percentage of Students', fontsize=16)
+    plt.xlabel('Result', fontsize=16)
+    plt.savefig('./EDA/GRADE-BY_plot_binary/Grade_Age.png', bbox_inches='tight')
+
+    # Dalc - workday alcohol consumption
+    alcohol_index = pd.crosstab(index=data.Dalc, columns=data.binary)
+    workday_alcohol_index = alcohol_index.apply(perc,axis=1)#.reindex(index)
+    workday_alcohol_index.plot.bar(fontsize=16, figsize=(14, 8))
+    plt.title('Result By workday alcohol Consumption', fontsize=20)
+    plt.ylabel('Percentage of Students ', fontsize=16)
+    plt.xlabel('Result', fontsize=16)
+    plt.savefig('./EDA/GRADE-BY_plot_binary/Grade_workday_alchol.png', bbox_inches='tight')
+
+    # Walc - weekday alcohol consumption
+    alcohol_index = pd.crosstab(index=data.Walc, columns=data.binary)
+    weekend_alcohol_index = alcohol_index.apply(perc,axis=1)#.reindex(index)
+    weekend_alcohol_index.plot.bar(colormap='winter', fontsize=16, figsize=(14, 8))
+    plt.title('Result By weekend alcohol Consumption', fontsize=20)
+    plt.ylabel('Percentage of Students ', fontsize=16)
+    plt.xlabel('Result', fontsize=16)
+    plt.savefig('./EDA/GRADE-BY_plot_binary/Grade_weekend_alchol.png', bbox_inches='tight')
+
+    # health - current health status
+    health_index = pd.crosstab(index=data.health, columns=data.binary)
+    Overall_health_index = health_index.apply(perc,axis=1)#.reindex(index)
+    Overall_health_index.plot.bar(colormap='summer', fontsize=16, figsize=(14, 8))
+    plt.title('Result By Overall health', fontsize=20)
+    plt.ylabel('Percentage of Students ', fontsize=16)
+    plt.xlabel('Result', fontsize=16)
+    plt.savefig('./EDA/GRADE-BY_plot_binary/Grade_overall_health.png', bbox_inches='tight')
+
+    # goout - going out with friends (numeric: from 1 - very low to 5 - very high)
+    goout_index = pd.crosstab(index=data.goout, columns=data.binary)
+    Overall_goout_index = goout_index.apply(perc,axis=1)#.reindex(index)
+    Overall_goout_index.plot.bar(colormap='jet', fontsize=16, figsize=(14, 8))
+    plt.title('Result By Going Out frequency', fontsize=20)
+    plt.ylabel('Percentage of Students ', fontsize=16)
+    plt.xlabel('Result', fontsize=16)
+    plt.savefig('./EDA/GRADE-BY_plot_binary/Grade_going_out.png', bbox_inches='tight')
+
+    # absences
+    data['Regularity'] = 'na'
+    data.loc[(data.absences >= 0) & (data.absences <= 5), 'Regularity'] = 'Always Regular'
+    data.loc[(data.absences >= 6) & (data.absences <= 11), 'Regularity'] = 'Regular'
+    data.loc[(data.absences >= 12), 'Regularity'] = 'Irregular'
+    #data.loc[(data.absences >= 23), 'Regularity'] = 'Irregular'
+    #data.loc[(data.absences >= 80) & (data.absences <= 93), 'Regularity'] = 'Highly Irregular'
+
+    # grade by absences
+    index=['Always Regular','Regular','Irregular']
+    absences = pd.crosstab(index=data.Regularity, columns=data.binary)
+    absences1=absences.apply(perc,axis=1).reindex(index)
+    absences1.plot.bar(fontsize=16, figsize=(14, 8))
+    plt.title('Result by students regularity', fontsize=20)
+    plt.ylabel('Percentage of Students', fontsize=16)
+    plt.xlabel('Result', fontsize=16)
+    plt.savefig('./EDA/GRADE-BY_plot_binary/Grade_regularity.png', bbox_inches='tight')
+
+    # 31 G1 - first period grade (numeric: from 0 to 20)
+    # 31 G2 - second period grade (numeric: from 0 to 20)
+    # 32 G3 - final grade (numeric: from 0 to 20, output target)
+    data['Grade1'] = 'na'
+    data.loc[(data.G1 >= 18) & (data.G1 <= 20), 'Grade1'] = 'Excellent'
+    data.loc[(data.G1 >= 15) & (data.G1 <= 17), 'Grade1'] = 'Good'
+    data.loc[(data.G1 >= 11) & (data.G1 <= 14), 'Grade1'] = 'Satisfactory'
+    data.loc[(data.G1 >= 6) & (data.G1 <= 10), 'Grade1'] = 'Poor'
+    data.loc[(data.G1 >= 0) & (data.G1 <= 5), 'Grade1'] = 'Failure'
+
+    data['Grade2'] = 'na'
+    data.loc[(data.G2 >= 18) & (data.G2 <= 20), 'Grade2'] = 'Excellent'
+    data.loc[(data.G2 >= 15) & (data.G2 <= 17), 'Grade2'] = 'Good'
+    data.loc[(data.G2 >= 11) & (data.G2 <= 14), 'Grade2'] = 'Satisfactory'
+    data.loc[(data.G2 >= 6) & (data.G2 <= 10), 'Grade2'] = 'Poor'
+    data.loc[(data.G2 >= 0) & (data.G2 <= 5), 'Grade2'] = 'Failure'
+
+    # grade by internet
+    internet_index = pd.crosstab(index=data.internet, columns=data.binary)
+    internet_index = internet_index.apply(perc,axis=1)#.reindex(index)
+    internet_index.plot.bar(fontsize=16, figsize=(14, 8))
+    plt.title('Result By internet Status', fontsize=20)
+    plt.ylabel('Percentage of Students', fontsize=16)
+    plt.xlabel('Result', fontsize=16)
+    plt.savefig('./EDA/GRADE-BY_plot_binary/Grade_internet_status.png', bbox_inches='tight')
+
+    #####CLOSE FIG TO SAVE MEMORY
+    plt.close('all')
+
+    # grade by studytime
+    studytime_index = pd.crosstab(index=data.studytime, columns=data.binary)
+    studytime_index = studytime_index.apply(perc,axis=1)#.reindex(index)
+    studytime_index.plot.bar(fontsize=16, figsize=(14, 8))
+    plt.title('Result By Study Time', fontsize=20)
+    plt.ylabel('Percentage of Students', fontsize=16)
+    plt.xlabel('Result', fontsize=16)
+    plt.savefig('./EDA/GRADE-BY_plot_binary/Grade_study_time.png', bbox_inches='tight')
+
+    # grade by gender
+    gender_index = pd.crosstab(index=data.sex, columns=data.binary)
+    gender_index = gender_index.apply(perc,axis=1)#.reindex(index)
+    gender_index.plot.bar(fontsize=16, figsize=(14, 8))
+    plt.title('Result By gender', fontsize=20)
+    plt.ylabel('Percentage of Students', fontsize=16)
+    plt.xlabel('Result', fontsize=16)
+    plt.savefig('./EDA/GRADE-BY_plot_binary/Grade_gender.png', bbox_inches='tight')
+
+    # grade by location
+    Location_index = pd.crosstab(index=data.address, columns=data.binary)
+    Location_index = Location_index.apply(perc,axis=1)#.reindex(index)
+    Location_index.plot.bar(fontsize=16, figsize=(14, 8))
+    plt.title('Result By Location', fontsize=20)
+    plt.ylabel('Percentage of Students', fontsize=16)
+    plt.xlabel('Result', fontsize=16)
+    plt.savefig('./EDA/GRADE-BY_plot_binary/Grade_location.png', bbox_inches='tight')
+
+    # grade by parent job
+    Mothers_index = pd.crosstab(index=data.Mjob, columns=data.binary)
+    Mothers_index = Mothers_index.apply(perc,axis=1)#.reindex(index)
+    Mothers_index.plot.bar(fontsize=16, figsize=(14, 8))
+    plt.title('Result By Mother Job', fontsize=20)
+    plt.ylabel('Percentage of Students', fontsize=16)
+    plt.xlabel('Result', fontsize=16)
+    plt.savefig('./EDA/GRADE-BY_plot_binary/Grade_mothers_job.png', bbox_inches='tight')
+
+
+    Fathers_index = pd.crosstab(index=data.Fjob, columns=data.binary)
+    Fathers_index = Fathers_index.apply(perc,axis=1)#.reindex(index)
+    Fathers_index.plot.bar(fontsize=16, figsize=(14, 8))
+    plt.title('Result By Father Job', fontsize=20)
+    plt.ylabel('Percentage of Students', fontsize=16)
+    plt.xlabel('Result', fontsize=16)
+    plt.savefig('./EDA/GRADE-BY_plot_binary/Grade_fathers_job.png', bbox_inches='tight')
+
+    # grade by parent edu
+    Mothers_index = pd.crosstab(index=data.Medu, columns=data.binary)
+    Mothers_index = Mothers_index.apply(perc,axis=1)#.reindex(index)
+    Mothers_index.plot.bar(fontsize=16, figsize=(14, 8))
+    plt.title('Result By Mother Education', fontsize=20)
+    plt.ylabel('Percentage of Students', fontsize=16)
+    plt.xlabel('Result', fontsize=16)
+    plt.savefig('./EDA/GRADE-BY_plot_binary/Grade_mothers_edu.png', bbox_inches='tight')
+
+
+    Fathers_index = pd.crosstab(index=data.Fedu, columns=data.binary)
+    Fathers_index = Fathers_index.apply(perc,axis=1)#.reindex(index)
+    Fathers_index.plot.bar(fontsize=16, figsize=(14, 8))
+    plt.title('Result By Father Education', fontsize=20)
+    plt.ylabel('Percentage of Students', fontsize=16)
+    plt.xlabel('Result', fontsize=16)
+    plt.savefig('./EDA/GRADE-BY_plot_binary/Grade_fathers_edu.png', bbox_inches='tight')
+
+    # grade by edu status plot
+    higher_index = pd.crosstab(index=data.higher, columns=data.binary)
+    higher_index = higher_index.apply(perc,axis=1)#.reindex(index)
+    higher_index.plot.bar(fontsize=16, figsize=(14, 8))
+    plt.title('Result By higher education Status', fontsize=20)
+    plt.ylabel('Percentage of Students', fontsize=16)
+    plt.xlabel('Result', fontsize=16)
+    plt.savefig('./EDA/GRADE-BY_plot_binary/Grade_mhigher_education_status.png', bbox_inches='tight')
+
+    # Grade By Parental Status plot
+    status_index = pd.crosstab(index=data.Pstatus, columns=data.binary)
+    status_index = status_index.apply(perc,axis=1)#.reindex(index)
+    status_index.plot.bar(fontsize=16, figsize=(14, 8))
+    plt.title('Result By Parental Status', fontsize=20)
+    plt.ylabel('Percentage of Students', fontsize=16)
+    plt.xlabel('Result', fontsize=16)
+    plt.savefig('./EDA/GRADE-BY_plot_binary/Grade_Parental_status.png', bbox_inches='tight')
+
+    # grade by Failures plot
+    status_index = pd.crosstab(index=data.failures, columns=data.binary)
+    status_index = status_index.apply(perc,axis=1)#.reindex(index)
+    status_index.plot.bar(fontsize=16, figsize=(14, 8))
+    plt.title('Result By failures', fontsize=20)
+    plt.ylabel('Percentage of Students', fontsize=16)
+    plt.xlabel('Result', fontsize=16)
+    plt.savefig('./EDA/GRADE-BY_plot_binary/Grade_Failure_status.png', bbox_inches='tight')
+
+    # grade by freetime
+    status_index = pd.crosstab(index=data.freetime, columns=data.binary)
+    status_index = status_index.apply(perc,axis=1)#.reindex(index)
+    status_index.plot.bar(fontsize=16, figsize=(14, 8))
+    plt.title('Result By freetime', fontsize=20)
+    plt.ylabel('Percentage of Students', fontsize=16)
+    plt.xlabel('Result', fontsize=16)
+    plt.savefig('./EDA/GRADE-BY_plot_binary/Grade_freetime_status.png', bbox_inches='tight')
+
+
 

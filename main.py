@@ -5,7 +5,7 @@ import bclassification
 
 def main():
 
-    #DataVisualization.performDataVis()
+    DataVisualization.performDataVis()
 
     #master.studydatasets()
 
@@ -66,7 +66,7 @@ def main():
     #bclassification.decisionTree(X, y, feature_names, onlycv=True)
     #bclassification.decisionTree(X,y, feature_names, onlycv=True, smote=True)
 
-    bclassification.randomForest(X, y, feature_names, search=True)
+    #bclassification.randomForest(X, y, feature_names, search=True)
 
 
 if __name__ == "__main__":
