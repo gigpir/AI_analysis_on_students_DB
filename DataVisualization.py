@@ -8,10 +8,10 @@ import plotly.io as pio
 import matplotlib.colors as colors
 from plotly.offline import plot
 
-verbose = False
 
 
-def performDataVis():
+
+def performDataVis(verbose = False):
     train_por = pd.read_csv('./student-por.csv', sep=';')
     train_mat = pd.read_csv('./student-mat.csv', sep=';')
 
@@ -33,10 +33,11 @@ def performDataVis():
         print("After remove duplicates: " + str(train_mat.shape))  # no duplicates in train_mat
 
     # Join the 2 tables
-    train_por['Subject'] = 'Portuguese'
-    train_mat['Subject'] = 'Maths'
+    #train_por['Subject'] = 'Portuguese'
+    #train_mat['Subject'] = 'Maths'
 
-    train = pd.concat([train_por, train_mat], axis=0)
+    #train = pd.concat([train_por, train_mat], axis=0)
+    train = train_por
 
     if verbose:
         print('Concatenated Tables:')

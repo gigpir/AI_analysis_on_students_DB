@@ -7,8 +7,6 @@ def main():
 
     DataVisualization.performDataVis()
 
-    #master.studydatasets()
-
     df= master.init('por')
     X,y, feature_names = master.preproc(df, select='novotes')
 
@@ -16,7 +14,6 @@ def main():
     #print(df)
 
     #X, y, feature_names = master.preproc(df)
-
 
     #analysis.preliminaryStat(X, df['binary'])
 

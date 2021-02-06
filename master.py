@@ -23,9 +23,9 @@ def init(dataframe='por'):
     ####################
     # IMPORT DATASET
     ####################
-    if dataframe=='por':
+    if dataframe =='por':
         df = pd.read_csv("./student-por.csv", sep=";")
-    elif dataframe=='mat':
+    elif dataframe =='mat':
         df = pd.read_csv("./student-mat.csv", sep=";")
     else:
         print("Input errato: usare dataframe='por' o dataframe='mat'")
@@ -175,46 +175,6 @@ def preproc(df, select='all'):
     y = db['binary']
     feature_names= x.columns
     return x, y, feature_names
-
-def studydatasets():
-
-    por = pd.read_csv('./student-por.csv', sep=';')
-    mat = pd.read_csv('./student-mat.csv', sep=';')
-    # print(por.head())
-    # print(mat.head())
-    # print(por.shape)
-    # print(mat.shape)
-    por['Subject'] = 'Portuguese'
-    mat['Subject'] = 'Maths'
-    print("The shape of the portoguese dataset is:", por.shape)
-    print("The shape of the mathematics dataset is:", mat.shape)
-    student = pd.concat([por, mat], axis=0)
-    print("The shape of the merging of the two datasets is:", student.shape)
-    # print(student.columns)
-
-    student_id = ['school', 'sex', 'address', 'famsize', 'Pstatus', 'Medu', 'Fedu',
-                  'Mjob', 'Fjob', 'reason', 'guardian', 'traveltime', 'activities', 'nursery',
-                  'higher', 'internet', 'romantic', 'famrel', 'freetime', 'goout', 'Dalc',
-                  'Walc', 'health']
-
-    student_distinct = student.drop_duplicates(subset=student_id)
-    print("The shape of the merging of the two datasetst taking discrete values is:", student_distinct.shape)
-
-    print("Attributes considered to drop duplicates are:")
-    print(student_id)
-    print("Attributes not considered to drop duplicates are:")
-    print(set(student.columns) - set(student_id))
-
-    # Togliendo solo age ci sono 4 record in meno: probabilmente i sondaggi sono stati svolti in tempi diversi
-    # ma sono abbastanza sicuro che gli studenti del dataset di matematica siano contenuti nel dataset di portoghese
-    # nel caso non fosse così ho comunque una differenza di sole 19 persone per cui unire i due dataset
-
-    # idea: c'è nel paper e possiamo farlo anche noi
-    # applichiamo ogni classificatore sia a mat che por considerando le configurazioni:
-    # con g1 e g2
-    # solo con g1
-    # solo con g2
-    # senza g1 nè g2
 
 def split(x, y, scaled=False):
     x_new = np.array(x)
