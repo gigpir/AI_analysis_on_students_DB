@@ -58,3 +58,4 @@ df_ = df.copy()
 
 df_.replace(replace_binary_attributes_map, inplace=True)
 
+print(df_['pass_fail'].value_counts())

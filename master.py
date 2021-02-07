@@ -183,7 +183,7 @@ def split(x, y, scaled=False):
     if scaled==True:
         x = sklearn.preprocessing.scale(x_new)
     # divisione fra train e test set
-    x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.5, random_state=123)
+    x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.3, random_state=123)
     y_train = np.ravel(y_train)
     y_test = np.ravel(y_test)
     return x_train, x_test, y_train, y_test
@@ -268,3 +268,26 @@ def cv_SMOTE(model, X, y):
         y_pred = model.predict(X_test)
         score.append(model.score(X_test,y_test))
     return np.mean(score)
+
+def plot_PCA2D(X,y):
+
+    x_pca = PCA(X,2)
+    x_pca_pass = []
+    x_pca_fail = []
+    for i,lab in enumerate(y):
+        if lab == 0:
+            x_pca_fail.append(x_pca[i])
+        else:
+            x_pca_pass.append(x_pca[i])
+
+    fig, ax = plt.subplots()
+    x_pca_fail = np.array(x_pca_fail)
+    x_pca_pass = np.array(x_pca_pass)
+    ax.scatter(x_pca_pass[:, 0], x_pca_pass[:, 1], c='#1f77b4', s=10, label='pass', alpha=1)
+    ax.scatter(x_pca_fail[:, 0], x_pca_fail[:, 1], c='#ff7f0e', s=10, label='fail', alpha=1)
+    ax.legend()
+    ax.grid(False)
+    ax.set_xlabel('PCA1')
+    ax.set_ylabel('PCA2')
+    ax.set_title('PCA - 2D scatter plot')
+    plt.savefig('./EDA/PCA2D.png', dpi=400)

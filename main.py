@@ -5,11 +5,12 @@ import bclassification
 
 def main():
 
-    DataVisualization.performDataVis()
+    #DataVisualization.performDataVis()
 
     df= master.init('por')
     X,y, feature_names = master.preproc(df, select='novotes')
 
+    master.plot_PCA2D(X,y)
     #df = master.init()
     #print(df)
 
