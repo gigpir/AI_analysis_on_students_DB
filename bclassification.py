@@ -21,7 +21,7 @@ from sklearn.tree import export_text
 #from sklearn.tree import export_graphviz
 #import pydotplus
 
-def kNN(x, y, onlynum=False, search=False, cv=True, k_cv=5, onlycv=False, smote=False, select='all'):
+def kNN(x, y, onlynum=False, search=False, cv=True, k_cv=5, onlycv=False, smote=False, select='all',return_clf=False):
     if not smote:
         print('kNN classifier')
     else:
@@ -109,7 +109,8 @@ def kNN(x, y, onlynum=False, search=False, cv=True, k_cv=5, onlycv=False, smote=
             print('Classification report:')
             print(sklearn.metrics.classification_report(y_pred, y_test))
             print()
-
+    if return_clf:
+        return neigh
 
 def LDA(x,y, onlycv=False, testacc=False, smote=False):
     if not smote:
@@ -149,7 +150,7 @@ def LDA(x,y, onlycv=False, testacc=False, smote=False):
         print()
 
 
-def logistic_regression(x,y, C_cv=1, search=False, cv=True, onlycv=False, smote=False):
+def logistic_regression(x,y, C_cv=1, search=False, cv=True, onlycv=False, smote=False, return_clf = False):
     if not smote:
         print('Logistic regression classifier')
     else:
@@ -214,6 +215,8 @@ def logistic_regression(x,y, C_cv=1, search=False, cv=True, onlycv=False, smote=
             print(sklearn.metrics.classification_report(y_pred, y_test))
             print()
 
+    if return_clf:
+        return clf
 
 def SVM(x,y, search=False, cv=True, C_cv=0.01, mode_cv='linear', onlycv=False, smote=False):
     if not smote:
@@ -511,3 +514,57 @@ def randomForest(x,y, feature_names, search=False, cv=True, onlycv=False, crit_c
                     print(i)
             # print(dictionary) #da associare alle colonne
             print()
+
+
+def ROC_curve_best_models(X,y):
+
+    X_train, X_test, y_train, y_test = train_test_split(X, y,
+                                                        test_size=.25,
+                                                        random_state=1234)
+
+    classifiers = [sklearn.linear_model.LogisticRegression(random_state=1234,C=0.1,max_iter=1000),
+                   KNeighborsClassifier(n_neighbors=5),
+                   LinearDiscriminantAnalysis(),
+                   sklearn.svm.SVC(C=0.01, kernel='linear',probability=True),
+                   sklearn.tree.DecisionTreeClassifier(criterion = 'entropy', random_state = 0, min_samples_leaf=40),
+                   RandomForestClassifier(random_state=1234, criterion='gini', n_estimators=10)]
+
+    # Define a result table as a DataFrame
+    result_table = pd.DataFrame(columns=['classifiers', 'fpr', 'tpr', 'auc'])
+
+    # Train the models and record the results
+    for cls in classifiers:
+        model = cls.fit(X_train, y_train)
+        yproba = model.predict_proba(X_test)[::, 1]
+
+        fpr, tpr, _ = sklearn.metrics.roc_curve(y_test, yproba)
+        auc = sklearn.metrics.roc_auc_score(y_test, yproba)
+
+        result_table = result_table.append({'classifiers': cls.__class__.__name__,
+                                            'fpr': fpr,
+                                            'tpr': tpr,
+                                            'auc': auc}, ignore_index=True)
+
+    # Set name of the classifiers as index labels
+    result_table.set_index('classifiers', inplace=True)
+
+    fig = plt.figure(figsize=(8, 6))
+
+    for i in result_table.index:
+        plt.plot(result_table.loc[i]['fpr'],
+                 result_table.loc[i]['tpr'],
+                 label="{}, AUC={:.3f}".format(i, result_table.loc[i]['auc']))
+
+    plt.plot([0, 1], [0, 1], color='orange', linestyle='--')
+
+    plt.xticks(np.arange(0.0, 1.1, step=0.1))
+    plt.xlabel("Flase Positive Rate", fontsize=15)
+
+    plt.yticks(np.arange(0.0, 1.1, step=0.1))
+    plt.ylabel("True Positive Rate", fontsize=15)
+
+    plt.title('ROC Curve Analysis', fontweight='bold', fontsize=15)
+    plt.legend(prop={'size': 13}, loc='lower right')
+
+    plt.show()
+    return 1
