@@ -566,5 +566,4 @@ def ROC_curve_best_models(X,y):
     plt.title('ROC Curve Analysis', fontweight='bold', fontsize=15)
     plt.legend(prop={'size': 13}, loc='lower right')
 
-    plt.show()
-    return 1
+    plt.savefig('./ROC.png', dpi=400)
