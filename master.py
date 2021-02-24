@@ -183,7 +183,7 @@ def split(x, y, scaled=False):
     if scaled==True:
         x = sklearn.preprocessing.scale(x_new)
     # divisione fra train e test set
-    x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.5, random_state=123, stratify=True)
+    x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.5, random_state=123, stratify=y)
     y_train = np.ravel(y_train)
     y_test = np.ravel(y_test)
     return x_train, x_test, y_train, y_test
@@ -254,7 +254,7 @@ def cv_SMOTE(model, X, y):
     X = np.array(X)
     y = np.array(y)
     y = np.ravel(y)
-    kf = StratifiedKFold(n_splits=10)
+    kf = sklearn.model_selection.StratifiedKFold(n_splits=10)
     score=[]
     for (train_index, test_index) in kf.split(X):
         X_train = X[train_index]
@@ -273,7 +273,7 @@ def cross_val(model, X, y):
     X = np.array(X)
     y = np.array(y)
     y = np.ravel(y)
-    kf = StratifiedKFold(n_splits=10)
+    kf = sklearn.model_selection.StratifiedKFold(n_splits=10)
     score=[]
     for (train_index, test_index) in kf.split(X):
         X_train = X[train_index]

@@ -47,7 +47,7 @@ def main():
      """
 
     # Binary classification -> hyperparameter tuning and cross validation
-    #bclassification.kNN(X, y, search=True, cv=False, select='novotes')
+    bclassification.kNN(X, y, search=True, cv=False, select='novotes')
     #bclassification.kNN(X,y,search=False,cv=True, select='novotes')
     #bclassification.kNN(X,y,search=False,cv=True, select='novotes', smote=True)
     #bclassification.kNN(X,y,search=False,cv=True, select='novotes', onlynum=True)
