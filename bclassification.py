@@ -96,7 +96,7 @@ def kNN(x, y, onlynum=False, search=False, cv=True, k_cv=5, onlycv=False, smote=
         neigh = KNeighborsClassifier(n_neighbors=k_cv)
         neigh.fit(x_train, y_train)
         y_pred = neigh.predict(x_test)
-        cv_accuracy=np.mean(cross_val_score(neigh, x, y, cv=10))
+        cv_accuracy=master.cross_val(neigh, x, y)
         if smote:
             cv_accuracy=master.cv_SMOTE(neigh,x,y)
         matrix = metrics.confusion_matrix(y_test, y_pred, normalize="true")
@@ -134,7 +134,7 @@ def LDA(x,y, onlycv=False, testacc=False, smote=False):
         print('Test score accuracy is:', score_test)
         print()
 
-    cv_accuracy = np.mean(cross_val_score(clf, x, y, cv=10))
+    cv_accuracy = master.cross_val(clf, x, y)
     if smote:
         cv_accuracy= master.cv_SMOTE(clf,x,y)
     print("10-fold cross validation accuracy for k=5 is:", cv_accuracy)
@@ -200,7 +200,7 @@ def logistic_regression(x,y, C_cv=1, search=False, cv=True, onlycv=False, smote=
         clf=sklearn.linear_model.LogisticRegression(C=C_cv,max_iter=1000)
         clf.fit(x_train, y_train)
         y_pred = clf.predict(x_test)
-        cv_accuracy=np.mean(cross_val_score(clf, x, y, cv=10))
+        cv_accuracy=master.cross_val(clf, x, y)
         if smote:
             cv_accuracy=master.cv_SMOTE(clf,x.y)
         print("10-fold cross validation accuracy for C={} is:".format(C_cv), cv_accuracy)
@@ -308,7 +308,7 @@ def SVM(x,y, search=False, cv=True, C_cv=0.01, mode_cv='linear', onlycv=False, s
     if cv:
         clf=sklearn.svm.SVC(C=C_cv,kernel=mode_cv).fit(x_train,y_train)
         y_pred = clf.predict(x_test)
-        cv_accuracy=np.mean(cross_val_score(clf, x, y, cv=10))
+        cv_accuracy=master.cross_val(clf, x, y)
         if smote:
             cv_accuracy = master.cv_SMOTE(clf, x, y)
         print("10-fold cross validation accuracy for C={} and {} kernel is:".format(C_cv,mode_cv), cv_accuracy)
@@ -365,7 +365,7 @@ def SVM_unbalanced(x,y, search=False, cv=True, weight_cv=1.25, onlycv=False):
     if cv:
         clf=sklearn.svm.SVC(C=0.01,kernel='linear',class_weight={0:weight_cv}).fit(x_train,y_train)
         y_pred = clf.predict(x_test)
-        cv_accuracy=np.mean(cross_val_score(clf, x, y, cv=10))
+        cv_accuracy=master.cross_val(clf, x, y)
         print("10-fold cross validation accuracy for weight={} is:".format(weight_cv), cv_accuracy)
         print()
 
@@ -440,7 +440,7 @@ def decisionTree(x, y, feature_names, onlycv=False, smote=False):
         #print('Test Score: '+str(score_test))
         #print()
 
-    cv_accuracy = np.mean(cross_val_score(clf, x, y, cv=10))
+    cv_accuracy = master.cross_val(clf, x, y)
     if smote:
         cv_accuracy=master.cv_SMOTE(clf,x,y)
     print('Cross validation accuracy:',cv_accuracy)
@@ -459,13 +459,12 @@ def randomForest(x,y, feature_names, search=False, cv=True, onlycv=False, crit_c
 
     # Fitting the classifier into the Training set
     # Grid search for criterion and n_estimators
-
     print_e = ['Test score with entropy criterion']
     print_g = ['Test score with gini criterion']
     if search:
         for crit in ['entropy', 'gini']:
             for n in [10,50,100,200,500]:
-                classifier = RandomForestClassifier(n_estimators=n, criterion=crit, random_state=0,min_samples_leaf=5)
+                classifier = RandomForestClassifier(n_estimators=n, criterion=crit, random_state=0,min_samples_leaf=40)
                 classifier.fit(x_train, y_train)
                 y_pred_train = classifier.predict(x_train)
                 y_pred_test = classifier.predict(x_test)
@@ -479,18 +478,18 @@ def randomForest(x,y, feature_names, search=False, cv=True, onlycv=False, crit_c
                     print_g.append(score_test)
                 #print('Train Scorefor {} estimators and {} criterion:'.format(n,crit)+ str(score_train)) #per n>10 è sempre 1
                 #print('Test Score for {} estimators and {} criterion:'.format(n,crit) + str(score_test))
-    # Predicting the test set results
-    header=[]
-    for i in [10,50,100,200,500]:
-        header.append("n={}".format(i))
-    print(tabulate([print_e, print_g], headers=header))
-    print()
+        # Predicting the test set results
+        header=[]
+        for i in [10,50,100,200,500]:
+            header.append("n={}".format(i))
+        print(tabulate([print_e, print_g], headers=header))
+        print()
 
     if cv:
         classifier= RandomForestClassifier(n_estimators=n_cv, criterion=crit_cv, random_state=0)
         classifier.fit(x_train, y_train)
         y_pred_test = classifier.predict(x_test)
-        cv_accuracy = np.mean(cross_val_score(classifier, x, y, cv=10))
+        cv_accuracy = master.cross_val(classifier, x, y)
         if smote:
             cv_accuracy=master.cv_SMOTE(classifier,x,y)
         print("10-fold cross validation accuracy for {} estimators and {} criterion is:".format(n_cv,crit_cv), cv_accuracy)
@@ -567,3 +566,55 @@ def ROC_curve_best_models(X,y):
     plt.legend(prop={'size': 13}, loc='lower right')
 
     plt.savefig('./ROC.png', dpi=400)
+
+    def ROC_curve_best_models(X, y):
+
+        X_train, X_test, y_train, y_test = train_test_split(X, y,
+                                                            test_size=.25,
+                                                            random_state=1234)
+
+        classifiers = [sklearn.linear_model.LogisticRegression(random_state=1234, C=0.1, max_iter=1000),
+                       KNeighborsClassifier(n_neighbors=5),
+                       LinearDiscriminantAnalysis(),
+                       sklearn.svm.SVC(C=0.01, kernel='linear', probability=True),
+                       sklearn.tree.DecisionTreeClassifier(criterion='entropy', random_state=0, min_samples_leaf=40),
+                       RandomForestClassifier(random_state=1234, criterion='gini', n_estimators=100)]
+
+        # Define a result table as a DataFrame
+        result_table = pd.DataFrame(columns=['classifiers', 'fpr', 'tpr', 'auc'])
+
+        # Train the models and record the results
+        for cls in classifiers:
+            model = cls.fit(X_train, y_train)
+            yproba = model.predict_proba(X_test)[::, 1]
+
+            fpr, tpr, _ = sklearn.metrics.roc_curve(y_test, yproba)
+            auc = sklearn.metrics.roc_auc_score(y_test, yproba)
+
+            result_table = result_table.append({'classifiers': cls.__class__.__name__,
+                                                'fpr': fpr,
+                                                'tpr': tpr,
+                                                'auc': auc}, ignore_index=True)
+
+        # Set name of the classifiers as index labels
+        result_table.set_index('classifiers', inplace=True)
+
+        fig = plt.figure(figsize=(8, 6))
+
+        for i in result_table.index:
+            plt.plot(result_table.loc[i]['fpr'],
+                     result_table.loc[i]['tpr'],
+                     label="{}, AUC={:.3f}".format(i, result_table.loc[i]['auc']))
+
+        plt.plot([0, 1], [0, 1], color='orange', linestyle='--')
+
+        plt.xticks(np.arange(0.0, 1.1, step=0.1))
+        plt.xlabel("False Positive Rate", fontsize=15)
+
+        plt.yticks(np.arange(0.0, 1.1, step=0.1))
+        plt.ylabel("True Positive Rate", fontsize=15)
+
+        plt.title('ROC Curve Analysis', fontweight='bold', fontsize=15)
+        plt.legend(prop={'size': 13}, loc='lower right')
+
+        plt.savefig('./ROC.png', dpi=400)

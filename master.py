@@ -183,7 +183,7 @@ def split(x, y, scaled=False):
     if scaled==True:
         x = sklearn.preprocessing.scale(x_new)
     # divisione fra train e test set
-    x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.3, random_state=123)
+    x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.5, random_state=123, stratify=True)
     y_train = np.ravel(y_train)
     y_test = np.ravel(y_test)
     return x_train, x_test, y_train, y_test
@@ -254,7 +254,7 @@ def cv_SMOTE(model, X, y):
     X = np.array(X)
     y = np.array(y)
     y = np.ravel(y)
-    kf = KFold(n_splits=10)
+    kf = StratifiedKFold(n_splits=10)
     score=[]
     for (train_index, test_index) in kf.split(X):
         X_train = X[train_index]
@@ -265,6 +265,24 @@ def cv_SMOTE(model, X, y):
         y_test= np.ravel(y_test)
         X_train_oversampled, y_train_oversampled = SMOTE(X_train, y_train)
         model.fit(X_train_oversampled, y_train_oversampled)
+        y_pred = model.predict(X_test)
+        score.append(model.score(X_test,y_test))
+    return np.mean(score)
+
+def cross_val(model, X, y):
+    X = np.array(X)
+    y = np.array(y)
+    y = np.ravel(y)
+    kf = StratifiedKFold(n_splits=10)
+    score=[]
+    for (train_index, test_index) in kf.split(X):
+        X_train = X[train_index]
+        y_train = y[train_index]
+        y_train= np.ravel(y_train)
+        X_test = X[test_index]
+        y_test = y[test_index]
+        y_test= np.ravel(y_test)
+        model.fit(X_train, y_train)
         y_pred = model.predict(X_test)
         score.append(model.score(X_test,y_test))
     return np.mean(score)
