@@ -256,7 +256,7 @@ def cv_SMOTE(model, X, y):
     y = np.ravel(y)
     kf = sklearn.model_selection.StratifiedKFold(n_splits=10)
     score=[]
-    for (train_index, test_index) in kf.split(X):
+    for (train_index, test_index) in kf.split(X,y):
         X_train = X[train_index]
         y_train = y[train_index]
         y_train= np.ravel(y_train)
@@ -275,7 +275,7 @@ def cross_val(model, X, y):
     y = np.ravel(y)
     kf = sklearn.model_selection.StratifiedKFold(n_splits=10)
     score=[]
-    for (train_index, test_index) in kf.split(X):
+    for (train_index, test_index) in kf.split(X,y):
         X_train = X[train_index]
         y_train = y[train_index]
         y_train= np.ravel(y_train)

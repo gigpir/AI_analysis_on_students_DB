@@ -21,7 +21,7 @@ from sklearn.tree import export_text
 #from sklearn.tree import export_graphviz
 #import pydotplus
 
-def kNN(x, y, onlynum=False, search=False, cv=True, k_cv=5, onlycv=False, smote=False, select='all',return_clf=False):
+def kNN(x, y, onlynum=False, search=False, cv=True, k_cv=9, onlycv=False, smote=False, select='all',return_clf=False):
     if not smote:
         print('kNN classifier')
     else:
@@ -52,7 +52,7 @@ def kNN(x, y, onlynum=False, search=False, cv=True, k_cv=5, onlycv=False, smote=
         score_train = []
         score_test = []
         print1=['Train score']
-        print2=['Test score']
+        print2=['Val score']
 
         # applico KNN con diversi parametri -> faccio da 1 a 19
         for i in range(1, 21, 2):
@@ -79,11 +79,11 @@ def kNN(x, y, onlynum=False, search=False, cv=True, k_cv=5, onlycv=False, smote=
         error_test = np.ones(len(xrange)) - score_test
 
         plt.plot(xrange, error_train, label="train error")
-        plt.plot(xrange, error_test, label="test error")
+        plt.plot(xrange, error_test, label="val error")
 
         plt.xlabel('K')
         plt.ylabel('Score error')
-        plt.title('KNN train and test score error for different values of K')
+        plt.title('KNN train and val score error for different values of K')
         plt.legend()
         plt.show()
 
@@ -100,10 +100,10 @@ def kNN(x, y, onlynum=False, search=False, cv=True, k_cv=5, onlycv=False, smote=
         if smote:
             cv_accuracy=master.cv_SMOTE(neigh,x,y)
         matrix = metrics.confusion_matrix(y_test, y_pred, normalize="true")
-        print("10-fold cross validation accuracy for k=5 is:", cv_accuracy)
+        print("10-fold cross validation accuracy for k=9 is:", cv_accuracy)
         print()
         if not onlycv:
-            print("Confusion matrix for k=5 normalized by true categories (rows):")
+            print("Confusion matrix for k=9 normalized by true categories (rows):")
             print(matrix)
             print()
             print('Classification report:')
@@ -150,7 +150,7 @@ def LDA(x,y, onlycv=False, testacc=False, smote=False):
         print()
 
 
-def logistic_regression(x,y, C_cv=1, search=False, cv=True, onlycv=False, smote=False, return_clf = False):
+def logistic_regression(x,y, C_cv=0.1, search=False, cv=True, onlycv=False, smote=False, return_clf = False):
     if not smote:
         print('Logistic regression classifier')
     else:
@@ -164,7 +164,7 @@ def logistic_regression(x,y, C_cv=1, search=False, cv=True, onlycv=False, smote=
     score_train = []
     score_test = []
     print1 = ['Train score']
-    print2 = ['Test score']
+    print2 = ['Val score']
     #search for better penalization parameter
     if search==True:
         for c in [0.001, 0.01,0.1,1,10,100]:
@@ -187,11 +187,11 @@ def logistic_regression(x,y, C_cv=1, search=False, cv=True, onlycv=False, smote=
         error_train = np.ones(len(xrange)) - score_train
         error_test = np.ones(len(xrange)) - score_test
         plt.plot(xrange, error_train, label="train score error")
-        plt.plot(xrange, error_test, label="test score error")
+        plt.plot(xrange, error_test, label="val score error")
         plt.xscale('log')
         plt.xlabel('C')
         plt.ylabel('Score error')
-        plt.title('Logistic Regression train and test score error for different values of C')
+        plt.title('Logistic Regression train and val score error for different values of C')
         plt.legend()
         plt.show()
 
@@ -202,7 +202,7 @@ def logistic_regression(x,y, C_cv=1, search=False, cv=True, onlycv=False, smote=
         y_pred = clf.predict(x_test)
         cv_accuracy=master.cross_val(clf, x, y)
         if smote:
-            cv_accuracy=master.cv_SMOTE(clf,x.y)
+            cv_accuracy=master.cv_SMOTE(clf,x, y)
         print("10-fold cross validation accuracy for C={} is:".format(C_cv), cv_accuracy)
         print()
 
@@ -218,7 +218,7 @@ def logistic_regression(x,y, C_cv=1, search=False, cv=True, onlycv=False, smote=
     if return_clf:
         return clf
 
-def SVM(x,y, search=False, cv=True, C_cv=0.01, mode_cv='linear', onlycv=False, smote=False):
+def SVM(x,y, search=False, cv=True, C_cv=0.1, mode_cv='linear', onlycv=False, smote=False):
     if not smote:
         print('SVM classifier')
     else:
@@ -236,7 +236,7 @@ def SVM(x,y, search=False, cv=True, C_cv=0.01, mode_cv='linear', onlycv=False, s
         score_train = []
         score_test = []
         print1 = ['Train score']
-        print2 = ['Test score']
+        print2 = ['Val score']
 
         for c in np.multiply([0.001, 0.01,0.1,1,10,100],100):
             clf= sklearn.svm.SVC(C=c,kernel='rbf').fit(x_train,y_train)
@@ -265,7 +265,7 @@ def SVM(x,y, search=False, cv=True, C_cv=0.01, mode_cv='linear', onlycv=False, s
         score_train = []
         score_test = []
         print1 = ['Train score']
-        print2 = ['Test score']
+        print2 = ['Val score']
         for c in [0.001, 0.01,0.1,1,10,100]:
             clf= sklearn.svm.SVC(C=c,kernel='linear').fit(x_train,y_train)
             y_pred_train=clf.predict(x_train)
@@ -296,11 +296,11 @@ def SVM(x,y, search=False, cv=True, C_cv=0.01, mode_cv='linear', onlycv=False, s
         error_train = np.ones(len(xrange)) - score_train
         error_test = np.ones(len(xrange)) - score_test
         plt.plot(xrange, error_train, label="train score error")
-        plt.plot(xrange, error_test, label="test score error")
+        plt.plot(xrange, error_test, label="val score error")
         plt.xscale('log')
         plt.xlabel('C')
         plt.ylabel('Score error')
-        plt.title('SVM with linear kernel train and test score accuracy for different C')
+        plt.title('SVM with linear kernel train and val score accuracy for different C')
         plt.legend()
         plt.show()
 
@@ -324,7 +324,7 @@ def SVM(x,y, search=False, cv=True, C_cv=0.01, mode_cv='linear', onlycv=False, s
     #10-fold cross validation accuracy for k=5 is: 0.9259855769230769 -> sembra ottimo!
 
 
-def SVM_unbalanced(x,y, search=False, cv=True, weight_cv=1.25, onlycv=False):
+def SVM_unbalanced(x,y, search=False, cv=True, weight_cv=2, onlycv=False):
     print('SVM unbalanced classifier')
     # script per classi non bilanciate -> da provare e capire se si può applicare anche agli altri
     # https://scikit-learn.org/stable/auto_examples/svm/plot_separating_hyperplane_unbalanced.html#sphx-glr-auto-examples-svm-plot-separating-hyperplane-unbalanced-py
@@ -338,14 +338,14 @@ def SVM_unbalanced(x,y, search=False, cv=True, weight_cv=1.25, onlycv=False):
         score_train = []
         score_test = []
         print1 = ['Train score']
-        print2 = ['Test score']
+        print2 = ['Val score']
 
 
         #class weight funziona come = {valore label : peso da assegnare}
         # non è spiegato bene, penso vada ad operare sulla loss function e penalizza di più classifichi male un punto della
         #label selezionata
         for weight in [1, 1.2, 1.4, 1.6, 1.8, 2]:
-            clf = sklearn.svm.SVC(C=0.01, kernel='linear',class_weight={0:weight}).fit(x_train, y_train)
+            clf = sklearn.svm.SVC(C=0.1, kernel='linear',class_weight={0:weight}).fit(x_train, y_train)
             y_pred_train = clf.predict(x_train)
             y_pred_test = clf.predict(x_test)
             score_train.append(metrics.accuracy_score(y_pred_train, y_train))
@@ -363,7 +363,7 @@ def SVM_unbalanced(x,y, search=False, cv=True, weight_cv=1.25, onlycv=False):
         print()
 
     if cv:
-        clf=sklearn.svm.SVC(C=0.01,kernel='linear',class_weight={0:weight_cv}).fit(x_train,y_train)
+        clf=sklearn.svm.SVC(C=0.1,kernel='linear',class_weight={0:weight_cv}).fit(x_train,y_train)
         y_pred = clf.predict(x_test)
         cv_accuracy=master.cross_val(clf, x, y)
         print("10-fold cross validation accuracy for weight={} is:".format(weight_cv), cv_accuracy)
@@ -394,7 +394,7 @@ def decisionTree(x, y, feature_names, onlycv=False, smote=False):
     if smote:
         x_train,y_train=master.SMOTE(x_train,y_train)
 
-    clf = tree.DecisionTreeClassifier(criterion = 'entropy', random_state = 0, min_samples_leaf=40) #cv_acc= 0.91055
+    clf = tree.DecisionTreeClassifier(criterion = 'entropy', random_state = 0, min_samples_leaf=15) #cv_acc= 0.91055
     #clf = tree.DecisionTreeClassifier(criterion='gini', random_state=0) #cv_acc=0.89514
 
     clf = clf.fit(x_train, y_train)

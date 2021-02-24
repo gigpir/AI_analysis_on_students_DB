@@ -47,7 +47,7 @@ def main():
      """
 
     # Binary classification -> hyperparameter tuning and cross validation
-    bclassification.kNN(X, y, search=True, cv=False, select='novotes')
+    #bclassification.kNN(X, y, search=True, cv=False, select='novotes')
     #bclassification.kNN(X,y,search=False,cv=True, select='novotes')
     #bclassification.kNN(X,y,search=False,cv=True, select='novotes', smote=True)
     #bclassification.kNN(X,y,search=False,cv=True, select='novotes', onlynum=True)
@@ -68,7 +68,7 @@ def main():
     #bclassification.SVM_unbalanced(X,y,search=True,cv=False)
     #bclassification.SVM_unbalanced(X,y)
 
-    #bclassification.decisionTree(X,y,feature_names, onlycv=True)
+    #bclassification.decisionTree(X,y,feature_names)
     #bclassification.decisionTree(X,y,feature_names,smote=True)
 
     #bclassification.randomForest(X,y,feature_names,search=True,cv=False)
